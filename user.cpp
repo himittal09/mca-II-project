@@ -1,20 +1,26 @@
-#include <iostream>
+#ifndef _IOSTREAM_
+    #define _IOSTREAM_
+    #include <iostream>
+#endif
 
-using std::string;
+#ifndef _FSTREAM_
+    #define _FSTREAM_
+    #include <fstream>
+#endif
 
-char * userFilename = "user.txt";
+std::string userFilename = std::string("user.txt");
 
 class User
 {
     static unsigned int userCount;
     
-    string name;
-    string password;
+    std::string name;
+    std::string password;
 
 public:
     unsigned int userId;
-    string email;
-    User (string email, string password, string name)
+    std::string email;
+    User (std::string email, std::string password, std::string name)
     {
         this->email = email;
         this->password = password;
@@ -26,7 +32,6 @@ public:
     User ()
     {
         this->userId = userCount;
-        
     }
 
     ~User ()
@@ -42,63 +47,66 @@ public:
     /*
      * Searches for an email in the database, if found, return userId, else returns 0
      * User location in database + 1 = userId
-     * @internal , donot use directly
+     * @internal, donot use directly
      */
-    static unsigned int findOne (string email)
+    static unsigned int findOne (std::string email)
     {
-        FILE *fp = fopen(userFilename, "rb+");
-        if (!fp)
+        std::ifstream fp;
+        fp.open(userFilename, std::ios::in);
+        if (!fp.good())
         {
             throw std::runtime_error("Unable to access user data, cannot perform operation now!!");
         }
         
-        int records=0;
         User st;
 
-        while (fread(&st, sizeof(User), 1, fp))
+        while (fp.read((char *)&st, sizeof(st)))
         {
-            records++;
             if (st.email == email)
             {
-                fclose(fp);
+                fp.close();
                 return st.userId;
             }
         }
-        fclose(fp);
+
+        fp.close();
         return 0;
     }
 
     /*
      * Creates a user in the database, doesnot checks if already retundant email
-     * @internal , donot use directly
+     * @internal, donot use directly
      */
     unsigned int save () const
     {
-        FILE *fp = fopen(userFilename, "ab+");
-        if (!fp)
+        std::ofstream fp;
+        fp.open(userFilename, std::ios::out);
+        if (!fp.good())
         {
             throw std::runtime_error("Unable to access user data, cannot perform operation now!!");
         }
         
-        fwrite(this, sizeof(this), 1, fp);
-        fclose(fp);
+        fp.write((char *)this, sizeof(this));
+        fp.close();
         return this->userId;
+        
     }
 
     static User findById (unsigned int userId)
     {
-        FILE *fp = fopen(userFilename, "rb+");
-        if (!fp)
+        std::ifstream fp;
+        fp.open(userFilename, std::ios::in);
+        if (!fp.good())
         {
             throw std::runtime_error("Unable to access user data, cannot perform operation now!!");
         }
-        
-        fseek(fp, sizeof(User) * (userId - 1), SEEK_SET);
 
-        User user;
-        fread(&user, sizeof(User), 1, fp);
-        fclose(fp);
-        return user;
+        User st;
+        
+        fp.seekg(sizeof(User) * (userId - 1), std::ios_base::beg);
+        fp.read((char *)&st, sizeof(st));
+        fp.close();
+        return st;
     }
 
 };

@@ -1,7 +1,12 @@
-#include <iostream>
-#include <chrono>
+#ifndef _IOSTREAM_
+    #define _IOSTREAM_
+    #include <iostream>
+#endif
 
-using std::string;
+#ifndef _CHRONO_
+    #define _CHRONO_
+    #include <chrono>
+#endif
 
 class Todo
 {
@@ -9,12 +14,12 @@ class Todo
 
     unsigned int todoId;
     unsigned int createrId;
-    string todo;
+    std::string todo;
     bool completed;
     std::chrono::system_clock::time_point createdAt;
     std::chrono::system_clock::time_point completedAt;
 
-    static unsigned int createTodo (string todoBody)
+    static unsigned int createTodo (std::string todoBody)
     {
         
         // new todo
@@ -26,10 +31,13 @@ class Todo
 
     void completeTodo ()
     {
-        /*
-        if(_.isBoolean(body.completed) && body.completed)
+    /*
+    if(_.isBoolean(body.completed) && body.completed)
+    {
         body.completedAt = new Date().getTime();
-    else {
+    }
+    else
+    {
         body.completed = false;
         body.completedAt = null;
     }
@@ -42,7 +50,7 @@ class Todo
             return response.status(404).send();
         response.status(200).send({todo});
     }).catch((error) => response.status(400).send());
-        */
+    */
     }
 
     void deleteTodo ()
