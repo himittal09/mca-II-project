@@ -1,0 +1,14 @@
+A basic authentication module to allow users to set a username/email and password
+to allow them login and keep their data separate from other users.
+ A to-do list where users can make to-do for smallest of their tasks. The to-do can be
+marked as completed, and the to-do will also have a creation date, to remind them to
+their longest completed goals.
+ A monthly goal planner, which allows users to set their tasks for current month and
+mark them done. The goals unachieved in the end of the month will be displayed to
+the user; so that he can be more persistent towards completion of his/her monthly
+goals.
+ An activity tracker, where the user will not have any time duration to complete the
+task, but he will have to do it/ complete it in some fixed interval. Users can be notified
+to complete the task, or they not be notified. Users will have to check in for their task
+to mark an interval complete. We can have streaks for user to further motivate them
+to complete their goals in time.
