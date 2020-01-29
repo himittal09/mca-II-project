@@ -23,22 +23,25 @@
     #include <stdexcept>
 #endif
 
-void AuthModule::authenticateUser (unsigned int userId) noexcept
+void AuthModule::authenticateUser (User& user) noexcept
 {
     isUserAuthenticated = true;
-    authenticatedUserId = userId;
+    authenticatedUserId = user.userId;
+    authenticatedUsername = user.name;
 }
 
 void AuthModule::unauthenticateUser () noexcept
 {
     isUserAuthenticated = false;
     authenticatedUserId = 0;
+    authenticatedUsername = std::string("User");
 }
 
 AuthModule::AuthModule () noexcept
 {
     isUserAuthenticated = false;
     authenticatedUserId = 0;
+    authenticatedUsername = std::string("User");
 }
 
 void AuthModule::logoutUser () noexcept(false)
@@ -58,26 +61,26 @@ void AuthModule::loginUser (std::string email, std::string password) noexcept(fa
         throw std::runtime_error("Logout current user first!!");
     }
 
-    unsigned int userId;
+    User user;
 
     try
     {
-        userId = User::findByCredentials(email, password);
+        user = User::findByCredentials(email, password);
     }
-    catch(const std::exception& e)
+    catch(const std::runtime_error& e)
     {
         throw e;
     }
     
-    if (userId == 0)
+    if (user.userId == 0)
     {
         throw std::runtime_error("No user found with current credentials!!");
     }
 
-    authenticateUser(userId);
+    authenticateUser(user);
 }
 
-unsigned int AuthModule::signupUser (std::string email, std::string password, std::string name) noexcept(false)
+void AuthModule::signupUser (std::string email, std::string password, std::string name) noexcept(false)
 {
     if (isUserAuthenticated)
     {
@@ -100,35 +103,31 @@ unsigned int AuthModule::signupUser (std::string email, std::string password, st
         throw std::runtime_error("User already exists!!");
     }
     
-    User *user = new User(email, password, name);
-    unsigned int userId = 0;
+    User user = User(email, password, name);
     
     try
     {
-        userId = user->save();
+        User::save(user);
     }
     catch(const std::runtime_error& e)
     {
         throw e;
     }
     
-    authenticateUser(userId);
-
-    return userId;
+    authenticateUser(user);
 }
 
 bool AuthModule::getIfUserAuthenticated () noexcept
 {
-    return this->isUserAuthenticated;
+    return isUserAuthenticated;
 }
 
 unsigned int AuthModule::getAuthenticatedUserId () noexcept
 {
-    return this->isUserAuthenticated ? this->authenticatedUserId : 0;
+    return authenticatedUserId;
 }
 
-int main ()
+std::string AuthModule::getAuthenticatedUsername () noexcept
 {
-
-    return 0;
+    return authenticatedUsername;
 }

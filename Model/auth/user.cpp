@@ -18,7 +18,12 @@
     #include <stdexcept>
 #endif
 
-std::string userFilename = std::string("user.txt");
+#ifndef _LIMITS_
+    #define _LIMITS_
+    #include <limits>
+#endif
+
+std::string userFilename = std::string("user.dat");
 
 unsigned int User::getUsersCount () noexcept(false)
 {
@@ -29,11 +34,16 @@ unsigned int User::getUsersCount () noexcept(false)
         throw std::runtime_error("Couldn't get the journals to display!!");
     }
 
-    fileptr.seekg(0, std::ios::end);
-    unsigned int fileLength = fileptr.tellg();
+    std::string str;
+    unsigned int fileLength = 0;
+    while (!fileptr.eof())
+    {
+        std::getline(fileptr, str);
+        fileLength++;
+    }
+
     fileptr.close();
-    fileLength /= sizeof(User);
-    return fileLength;
+    return fileLength-1;
 }
 
 User::User (std::string email, std::string password, std::string name) noexcept(false)
@@ -43,7 +53,7 @@ User::User (std::string email, std::string password, std::string name) noexcept(
     this->name = name;
     try
     {
-        this->userId = User::getUsersCount();
+        this->userId = User::getUsersCount()+1;
     }
     catch(const std::runtime_error& e)
     {
@@ -56,11 +66,6 @@ User::User () noexcept
     this->userId = 0;
 }
 
-/*
-    * Searches for an email in the database, if found, return userId, else returns 0
-    * User location in database + 1 = userId
-    * @internal, donot use directly
-    */
 unsigned int User::findOne (std::string email) noexcept(false)
 {
     std::ifstream fp;
@@ -72,8 +77,9 @@ unsigned int User::findOne (std::string email) noexcept(false)
     
     User st;
 
-    while (fp.read((char *)&st, sizeof(st)))
+    while (!fp.eof())
     {
+        fp >> st;
         if (st.email == email)
         {
             fp.close();
@@ -85,43 +91,19 @@ unsigned int User::findOne (std::string email) noexcept(false)
     return 0;
 }
 
-/*
-    * Creates a user in the database, doesnot checks if already retundant email
-    * @internal, donot use directly
-    */
-unsigned int User::save () const noexcept(false)
+void User::save (User user) noexcept(false)
 {
     std::ofstream fp;
-    fp.open(userFilename, std::ios::out);
+    fp.open(userFilename, std::ios::app | std::ios::out);
     if (!fp.good())
     {
         throw std::runtime_error("Unable to access user data, cannot perform operation now!!");
     }
-    
-    fp.write((char *)this, sizeof(this));
+    fp << user;
     fp.close();
-    return this->userId;
-    
 }
 
-User User::findById (unsigned int userId) noexcept(false)
-{
-    std::ifstream fp;
-    fp.open(userFilename, std::ios::in);
-    if (!fp.good())
-    {
-        throw std::runtime_error("Unable to access user data, cannot perform operation now!!");
-    }
-
-    User st;
-    
-    fp.seekg(sizeof(User) * (userId - 1), std::ios_base::beg);
-    fp.read((char *)&st, sizeof(st));
-    fp.close();
-    return st;
-}
-
-unsigned int User::findByCredentials (std::string email, std::string password) noexcept(false)
+User User::findByCredentials (std::string email, std::string password) noexcept(false)
 {
     std::ifstream fp;
     fp.open(userFilename, std::ios::in);
@@ -132,14 +114,14 @@ unsigned int User::findByCredentials (std::string email, std::string password) n
     
     User st;
 
-    while (fp.read((char *)&st, sizeof(st)))
+    while (!fp.eof())
     {
+        fp >> st;
         if (st.email == email)
         {
             if (st.password == password)
             {
-                fp.close();
-                return st.userId;
+                break;
             }
             else
             {
@@ -150,17 +132,21 @@ unsigned int User::findByCredentials (std::string email, std::string password) n
     }
 
     fp.close();
-    return 0;
+    return st;
 }
 
-std::ifstream& User::operator >> (std::ifstream& stream)
+std::ifstream& operator >> (std::ifstream& stream, User& obj)
 {
-    stream.read((char *)this, sizeof(this));
+    std::getline(stream, obj.name, '$');
+    std::getline(stream, obj.email, '$');
+    std::getline(stream, obj.password, '$');
+    stream >> obj.userId;
+    stream.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     return stream;
 }
 
-std::ofstream& User::operator<<(std::ofstream& stream)
+std::ofstream& operator << (std::ofstream& stream, User& obj)
 {
-    stream.write((char *)this, sizeof(this));
+    stream << obj.name << "$" << obj.email << "$" << obj.password << "$" << obj.userId << "\n";
     return stream;
 }

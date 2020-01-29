@@ -70,12 +70,12 @@ LongTermGoalJournal::LongTermGoalJournal (std::string journal, unsigned int ltgI
 void LongTermGoalJournal::save (unsigned int journalsLodged=0) const noexcept(false)
 {
     std::ofstream wfileptr;
-    wfileptr.open(ltgjournals, std::ios::out);
+    wfileptr.open(ltgjournals, std::ios::app | std::ios::out);
     if (!wfileptr.good())
     {
         throw std::runtime_error("Couldnot save the journal for the Goal!!");
     }
-    wfileptr.write((char *)this, sizeof(this));
+    wfileptr << this;
     wfileptr.close();
 
     // if (journalsLodged > 10)
@@ -150,14 +150,14 @@ std::vector<LongTermGoalJournal> LongTermGoalJournal::getJournals (unsigned int 
     return journals;
 }
 
-std::ifstream& LongTermGoalJournal::operator >> (std::ifstream& stream)
+std::ifstream& operator >> (std::ifstream& stream, const LongTermGoalJournal& obj)
 {
-    stream.read((char *)this, sizeof(this));
+    stream.read((char *)&obj, sizeof(obj));
     return stream;
 }
 
-std::ofstream& LongTermGoalJournal::operator<<(std::ofstream& stream)
+std::ofstream& operator<<(std::ofstream& stream, const LongTermGoalJournal& obj)
 {
-    stream.write((char *)this, sizeof(this));
+    stream.write((char *)&obj, sizeof(obj));
     return stream;
 }

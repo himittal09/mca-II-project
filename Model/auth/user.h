@@ -5,10 +5,10 @@
 
 class User
 {
-    std::string name;
-    std::string password;
     unsigned int getUsersCount () noexcept(false);
 public:
+    std::string password;
+    std::string name;
     unsigned int userId;
     std::string email;
     
@@ -26,10 +26,9 @@ public:
      * Creates a user in the database, doesnot checks if already retundant email
      * @internal, donot use directly
      */
-    unsigned int save () const noexcept(false);
-    static User findById (unsigned int userId) noexcept(false);
-    static unsigned int findByCredentials (std::string email, std::string password) noexcept(false);
+    static void save (User user) noexcept(false);
+    static User findByCredentials (std::string email, std::string password) noexcept(false);
 
-    std::ifstream& operator >> (std::ifstream&);
-    std::ofstream& operator << (std::ofstream&);
+    friend std::ifstream& operator >> (std::ifstream&, User& obj);
+    friend std::ofstream& operator << (std::ofstream&, User& obj);
 };

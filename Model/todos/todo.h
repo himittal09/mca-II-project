@@ -1,0 +1,34 @@
+#ifndef _IOSTREAM_
+    #define _IOSTREAM_
+    #include <iostream>
+#endif
+
+#ifndef _VECTOR_
+    #define _VECTOR_
+    #include <vector>
+#endif
+
+class Todo
+{
+    unsigned int todoId;
+    unsigned int createrId;
+    std::string todo;
+    bool completed;
+    int64_t createdAt;
+    int64_t completedAt;
+
+    static unsigned int getTodoCount () noexcept(false);
+public:
+    Todo () noexcept;
+    Todo (std::string todoBody) noexcept(false);
+
+    void save () noexcept(false);
+    static std::vector<Todo> getAllTodos (bool getCompleted) noexcept(false);
+    void completeTodo () noexcept(false);
+    
+    friend std::ifstream& operator >> (std::ifstream&, Todo& obj);
+    friend std::ofstream& operator << (std::ofstream&, Todo& obj);
+};
+
+
+

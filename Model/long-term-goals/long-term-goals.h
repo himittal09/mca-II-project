@@ -25,11 +25,11 @@ public:
     LongTermGoals () noexcept;
     LongTermGoals (std::string) noexcept(false);
     unsigned int save () noexcept(false);
-    static std::vector<LongTermGoals> getAllGoals () noexcept(false);
+    static std::vector<LongTermGoals> getAllGoals (bool getCompleted) noexcept(false);
     void lodgeJournal (std::string journalToLodge) noexcept(false);
     void markGoalComplete () noexcept(false);
     std::vector<LongTermGoalJournal> getMyJournals () noexcept(false);
 
-    std::ifstream& operator >> (std::ifstream&);
-    std::ofstream& operator << (std::ofstream&);
+    friend std::ifstream& operator >> (std::ifstream&, const LongTermGoals& obj);
+    friend std::ofstream& operator << (std::ofstream&, const LongTermGoals& obj);
 };

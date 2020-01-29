@@ -5,5 +5,5 @@
 
 class ActivityTracker
 {
-
+    // after init, push notifications for all streaks (uncompleted)
 };

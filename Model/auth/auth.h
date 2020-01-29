@@ -1,3 +1,8 @@
+#ifndef __USERH__
+    #define __USERH__
+    #include "./user.h"
+#endif
+
 #ifndef _IOSTREAM_
     #define _IOSTREAM_
     #include <iostream>
@@ -5,20 +10,20 @@
 
 class AuthModule
 {
-    bool isUserAuthenticated = false;
-    unsigned int authenticatedUserId = 0;
-    void authenticateUser (unsigned int userId) noexcept;
+    bool isUserAuthenticated;
+    unsigned int authenticatedUserId;
+    std::string authenticatedUsername;
+
+    void authenticateUser (User& user) noexcept;
     void unauthenticateUser () noexcept;
 public:
     AuthModule () noexcept;
+
     void logoutUser () noexcept(false);
     void loginUser (std::string email, std::string password) noexcept(false);
-    unsigned int signupUser (std::string email, std::string password, std::string name) noexcept(false);
+    void signupUser (std::string email, std::string password, std::string name) noexcept(false);
+
     bool getIfUserAuthenticated () noexcept;
     unsigned int getAuthenticatedUserId () noexcept;
+    std::string getAuthenticatedUsername () noexcept;
 };
-
-namespace auth
-{
-    AuthModule auth;
-}

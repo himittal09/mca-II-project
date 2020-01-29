@@ -1,1 +1,1 @@
-g++ 
+g++ -std=c++11 ./Model/auth/user.cpp ./Model/auth/auth.cpp ./Controller/util.cpp ./View/menus.cpp ./View/auth.cpp ./View/Main/mainmenu.cpp ./main.cpp

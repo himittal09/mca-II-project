@@ -20,6 +20,6 @@ public:
     void save (unsigned int journalsLodged) const noexcept(false);
     static std::vector<LongTermGoalJournal> getJournals (unsigned int goalId) noexcept(false);
 
-    std::ifstream& operator >> (std::ifstream&);
-    std::ofstream& operator << (std::ofstream&);
+    friend std::ifstream& operator >> (std::ifstream&, const LongTermGoalJournal& obj);
+    friend std::ofstream& operator << (std::ofstream&, const LongTermGoalJournal& obj);
 };
