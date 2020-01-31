@@ -1,0 +1,44 @@
+./main.cpp                                          __MAINFILE__
+
+**************************************************************
+
+./Controller/auth-provider.h                        __APH__
+./Controller/date.hpp                               __DATEH__
+./Controller/filesystem.hpp                         _FILESYSTEM_
+./Controller/util.h                                 __UTILSH__
+./Controller/util.cpp                               __UTILS__
+
+**************************************************************
+
+./Model/activity-tracker/activity-tracker.h         __ATH__
+./Model/activity-tracker/activity-tracker.cpp       __AT__
+
+./Model/auth/user.h                                 __USERH__
+./Model/auth/user.cpp                               __USER__
+./Model/auth/auth.h                                 __AUTHH__
+./Model/auth/auth.cpp                               __AUTH__
+
+./Model/long-term-goals/long-term-goals.h           __LTGH__
+./Model/long-term-goals/long-term-goals.cpp         __LTG__
+./Model/long-term-goals/long-term-journal.h         __LTJH__
+./Model/long-term-goals/long-term-journal.cpp       __LTJ__
+
+./Model/monthly-planner/monthly-planner.h           __MONTHLYH__
+./Model/monthly-planner/monthly-planner.cpp         __MONTHLY__
+
+./Model/notification/notification.h                 __NOTIFICATIONH__
+./Model/notification/notification.cpp               __NOTIFICATION__
+
+./Model/todos/todo.h                                __TODOH__
+./Model/todos/todo.cpp                              __TODO__
+
+**************************************************************
+
+./View/menus.h                                      __MENUVH__
+./View/menus.cpp                                    __MENUV__
+./View/auth.h                                       __AUTHVH__
+./View/auth.cpp                                     __AUTHV__
+
+./View/Main/mainmenu.h                              __MMENUVH__
+./View/Main/mainmenu.cpp                            __MMENUV__
+

@@ -3,9 +3,9 @@
     #include "./todo.h"
 #endif
 
-#ifndef __AUTHH__
-    #define __AUTHH__
-    #include "../auth/auth.h"
+#ifndef __APH__
+    #define __APH__
+    #include "../../Controller/auth-provider.h"
 #endif
 
 #ifndef _IOSTREAM_
@@ -28,11 +28,6 @@
     #include <stdexcept>
 #endif
 
-#ifndef _LIMITS_
-    #define _LIMITS_
-    #include <limits>
-#endif
-
 // #ifndef _FILESYSTEM_
 //     #define _FILESYSTEM_
 //     #include "../../Controller/filesystem.hpp"
@@ -52,9 +47,8 @@ unsigned int Todo::getTodoCount () noexcept(false)
     std::string str;
     unsigned int fileLength = 0;
     
-    while (!wstream.eof())
+    for (std::string str; std::getline(wstream, str); )
     {
-        std::getline(wstream, str);
         fileLength++;
     }
 
@@ -75,7 +69,7 @@ Todo::Todo (std::string todoBody) noexcept(false)
     this->completed = false;
     this->createdAt = now.time_since_epoch().count();
     this->completedAt = 0;
-    this->createrId = AuthModule::getAuthenticatedUserId();
+    this->createrId = auth::authProvider->getAuthenticatedUserId();
 
     try
     {
@@ -100,10 +94,9 @@ std::vector<Todo> Todo::getAllTodos (bool getCompleted) noexcept(false)
     }
 
     Todo obj;
-    while (!stream.eof())
+    while (!(stream >> obj).eof())
     {
-        stream >> obj;
-        if ((obj.createrId == AuthModule::getAuthenticatedUserId()) && (obj.completed == getCompleted))
+        if ((obj.createrId == auth::authProvider->getAuthenticatedUserId()) && (obj.completed == getCompleted))
         {
             allTodos.push_back(obj);
         }
@@ -112,7 +105,7 @@ std::vector<Todo> Todo::getAllTodos (bool getCompleted) noexcept(false)
     return allTodos;
 }
 
-void Todo::save () noexcept(false)
+void Todo::save (Todo& obj) noexcept(false)
 {
     std::ofstream writestream;
     writestream.open(todoFilePath, std::ios::app | std::ios::out);
@@ -120,7 +113,7 @@ void Todo::save () noexcept(false)
     {
         throw std::runtime_error("Couldn't save the todo in the database");
     }
-    writestream << this;
+    writestream << obj;
     writestream.close();
 }
 
@@ -134,22 +127,43 @@ void Todo::completeTodo () noexcept(false)
     this->completedAt = now.time_since_epoch().count();
     this->completed = true;
 
+    std::ifstream rstream;
+    rstream.open(todoFilePath, std::ios::in);
+    if (!rstream.good())
+    {
+        throw std::runtime_error("Couldn't update the todo!!");
+    }
+
     std::ofstream wstream;
-    wstream.open(todoFilePath, std::ios::app | std::ios::out);
+    wstream.open("temp.dat", std::ios::out);
     if (!wstream.good())
     {
         throw std::runtime_error("Couldn't update the todo!!");
     }
-    wstream.seekp((this->todoId - 1) * sizeof(Todo), std::ios::beg);
-    wstream << this;
+
+    Todo obj;
+
+    while (!(rstream >> obj).eof())
+    {
+        if (obj.todoId == this->todoId)
+        {
+            obj.completedAt = now.time_since_epoch().count();
+            obj.completed = true;
+        }
+        wstream << obj;
+    }
+
     wstream.close();
+    rstream.close();
+
+    remove(todoFilePath.c_str());
+    rename("temp.dat", todoFilePath.c_str());
 }
 
 std::ifstream& operator >> (std::ifstream& stream, Todo& obj)
 {
     std::getline(stream, obj.todo, '$');
     stream >> obj.todoId >> obj.createrId >> obj.completed >> obj.createdAt >> obj.completedAt;
-    stream.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     return stream;
 }
 

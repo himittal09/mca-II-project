@@ -3,6 +3,11 @@
     #include "./Model/auth/auth.h"
 #endif
 
+#ifndef __APH__
+    #define __APH__
+    #include "./Controller/auth-provider.h"
+#endif
+
 #ifndef __MENUMH__
     #define __MENUMH__
     #include "./View/menus.h"
@@ -13,20 +18,21 @@
     #include <iostream>
 #endif
 
+std::unique_ptr<AuthModule> auth::authProvider (new AuthModule());
+
 int main ()
 {
-    AuthModule authProvider = AuthModule();
     welcomeBanner ();
     bool exitRequest = false;
     while (!exitRequest)
     {
-        if (authProvider.getIfUserAuthenticated())
+        if (auth::authProvider->getIfUserAuthenticated())
         {
-            exitRequest = mainMenu (authProvider);
+            exitRequest = mainMenu ();
         }
         else
         {
-            exitRequest = authMenu (authProvider);
+            exitRequest = authMenu ();
         }
     }
     std::cout << "\nSee you soon ;)";

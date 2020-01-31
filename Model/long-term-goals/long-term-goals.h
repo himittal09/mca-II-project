@@ -18,18 +18,19 @@ class LongTermGoals
     unsigned int journals_logded;
     bool isCompleted;
 
-    void incrJournalsLogded () noexcept(false);
+    // void incrJournalsLogded () noexcept(false);
     static unsigned int getGoalsCount () noexcept(false);
 
 public:
     LongTermGoals () noexcept;
     LongTermGoals (std::string) noexcept(false);
-    unsigned int save () noexcept(false);
+
+    static void save (LongTermGoals& obj) noexcept(false);
     static std::vector<LongTermGoals> getAllGoals (bool getCompleted) noexcept(false);
     void lodgeJournal (std::string journalToLodge) noexcept(false);
     void markGoalComplete () noexcept(false);
     std::vector<LongTermGoalJournal> getMyJournals () noexcept(false);
 
-    friend std::ifstream& operator >> (std::ifstream&, const LongTermGoals& obj);
-    friend std::ofstream& operator << (std::ofstream&, const LongTermGoals& obj);
+    friend std::ifstream& operator >> (std::ifstream&, LongTermGoals& obj);
+    friend std::ofstream& operator << (std::ofstream&, LongTermGoals& obj);
 };

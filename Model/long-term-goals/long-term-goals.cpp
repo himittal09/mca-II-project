@@ -8,9 +8,9 @@
     #include "./long-term-journal.h"
 #endif
 
-#ifndef __AP__
-    #define __AP__
-    #include "../auth/auth-provider.cpp"
+#ifndef __APH__
+    #define __APH__
+    #include "../../Controller/auth-provider.h"
 #endif
 
 #ifndef _IOSTREAM_
@@ -45,21 +45,21 @@
 
 std::string ltgFilePath = std::string("longtermgoal.dat");
 
-void LongTermGoals::incrJournalsLogded () noexcept(false)
-{
-    std::ofstream wstream;
-    wstream.open(ltgFilePath, std::ios::app | std::ios::out);
+// void LongTermGoals::incrJournalsLogded () noexcept(false)
+// {
+//     std::ofstream wstream;
+//     wstream.open(ltgFilePath, std::ios::app | std::ios::out);
 
-    if (!wstream.good())
-    {
-        throw std::runtime_error("Cannot determine the journals lodged count!!");
-    }
+//     if (!wstream.good())
+//     {
+//         throw std::runtime_error("Cannot determine the journals lodged count!!");
+//     }
 
-    this->journals_logded++;
-    wstream.seekp((this->LongTermGoalId - 1) * sizeof(LongTermGoals), std::ios::beg);
-    wstream.write((char *)this, sizeof(this));
-    wstream.close();
-}
+//     this->journals_logded++;
+//     wstream.seekp((this->LongTermGoalId - 1) * sizeof(LongTermGoals), std::ios::beg);
+//     wstream.write((char *)this, sizeof(this));
+//     wstream.close();
+// }
 
 unsigned int LongTermGoals::getGoalsCount () noexcept(false)
 {
@@ -70,12 +70,15 @@ unsigned int LongTermGoals::getGoalsCount () noexcept(false)
         throw std::runtime_error("Couldn't get the journals to display!!");
     }
 
-    fileptr.seekg(0, std::ios::end);
-
-    unsigned int fileLength = fileptr.tellg();
+    unsigned int fileLength = 0;
+    
+    for (std::string str; std::getline(fileptr, str); )
+    {
+        fileLength++;
+    }
 
     fileptr.close();
-    return fileLength / sizeof(LongTermGoals);
+    return fileLength-1;
 }
 
 LongTermGoals::LongTermGoals () noexcept
@@ -104,7 +107,7 @@ LongTermGoals::LongTermGoals (std::string goal) noexcept(false)
     }
 }
 
-unsigned int LongTermGoals::save () noexcept(false)
+void LongTermGoals::save (LongTermGoals& obj) noexcept(false)
 {
     std::ofstream writestream;
     writestream.open(ltgFilePath, std::ios::app | std::ios::out);
@@ -112,9 +115,8 @@ unsigned int LongTermGoals::save () noexcept(false)
     {
         throw std::runtime_error("Couldn't save the goal in the database");
     }
-    writestream << this;
+    writestream << obj;
     writestream.close();
-    return this->LongTermGoalId;
 }
 
 std::vector<LongTermGoals> LongTermGoals::getAllGoals (bool getCompleted) noexcept(false)
@@ -130,9 +132,8 @@ std::vector<LongTermGoals> LongTermGoals::getAllGoals (bool getCompleted) noexce
     }
 
     LongTermGoals obj;
-    while (!stream.eof())
+    while (!(stream >> obj).eof())
     {
-        stream >> obj;
         if ((obj.userId == auth::authProvider->getAuthenticatedUserId()) && (obj.isCompleted == getCompleted))
         {
             myltg.push_back(obj);
@@ -149,7 +150,7 @@ void LongTermGoals::lodgeJournal (std::string jour) noexcept(false)
     {
         // this->incrJournalsLogded();
         // TODO: increment journal_lodged counter on file everytime a new journal is lodged
-        journal.save(10);
+        LongTermGoalJournal::save(journal, 10);
         // TODO: update last progress on longtermgoal every time a new journal for a goal is posted
     }
     catch(const std::runtime_error& e)
@@ -160,16 +161,43 @@ void LongTermGoals::lodgeJournal (std::string jour) noexcept(false)
 
 void LongTermGoals::markGoalComplete () noexcept(false)
 {
+    if (this->isCompleted)
+    {
+        return;
+    }
+    
+    this->isCompleted = true;
+
+    std::ifstream rstream;
+    rstream.open(ltgFilePath, std::ios::in);
+    if (!rstream.good())
+    {
+        throw std::runtime_error("Couldn't update the todo!!");
+    }
+
     std::ofstream wstream;
-    wstream.open(ltgFilePath, std::ios::app | std::ios::out);
+    wstream.open("temp.dat", std::ios::out);
     if (!wstream.good())
     {
-        throw std::runtime_error("Cannot determine the journals lodged count!!");
+        throw std::runtime_error("Couldn't update the todo!!");
     }
-    this->isCompleted = true;
-    wstream.seekp((this->LongTermGoalId - 1) * sizeof(LongTermGoals), std::ios::beg);
-    wstream << this;
+
+    LongTermGoals obj;
+
+    while (!(rstream >> obj).eof())
+    {
+        if (obj.LongTermGoalId == this->LongTermGoalId)
+        {
+            obj.isCompleted = true;
+        }
+        wstream << obj;
+    }
+
     wstream.close();
+    rstream.close();
+
+    remove(ltgFilePath.c_str());
+    rename("temp.dat", ltgFilePath.c_str());
 }
 
 std::vector<LongTermGoalJournal> LongTermGoals::getMyJournals () noexcept(false)
@@ -184,14 +212,17 @@ std::vector<LongTermGoalJournal> LongTermGoals::getMyJournals () noexcept(false)
     }
 }
 
-std::ifstream& operator >> (std::ifstream& stream, const LongTermGoals& obj)
+std::ifstream& operator >> (std::ifstream& stream, LongTermGoals& obj)
 {
-    stream.read((char *)&obj, sizeof(obj));
+    std::getline(stream, obj.goal, '$');
+    stream >> obj.LongTermGoalId >> obj.userId >> obj.lastProgress >> obj.creationDate;
+    stream >> obj.journals_logded >> obj.isCompleted;
     return stream;
 }
 
-std::ofstream& operator<<(std::ofstream& stream, const LongTermGoals& obj)
+std::ofstream& operator<<(std::ofstream& stream, LongTermGoals& obj)
 {
-    stream.write((char *)&obj, sizeof(obj));
+    stream << obj.goal << "$" << obj.LongTermGoalId << " " << obj.userId << " " << obj.lastProgress << " ";
+    stream <<  obj.creationDate << " " << obj.journals_logded << " " << obj.isCompleted;
     return stream;
 }

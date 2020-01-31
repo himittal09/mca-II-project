@@ -40,7 +40,6 @@ void SetStdinEcho(bool enable = true)
 
 // usage
 #include <iostream>
-#include <string>
 
 int main()
 {

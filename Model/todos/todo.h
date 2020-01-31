@@ -22,7 +22,7 @@ public:
     Todo () noexcept;
     Todo (std::string todoBody) noexcept(false);
 
-    void save () noexcept(false);
+    static void save (Todo& obj) noexcept(false);
     static std::vector<Todo> getAllTodos (bool getCompleted) noexcept(false);
     void completeTodo () noexcept(false);
     

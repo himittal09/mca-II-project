@@ -42,32 +42,16 @@ LongTermGoalJournal::LongTermGoalJournal () noexcept
 
 LongTermGoalJournal::LongTermGoalJournal (std::string journal, unsigned int ltgId) noexcept
 {    
-    // adding a delimiter to take multiword input with grace
-    this->journal = (journal + std::string("$"));
-
     auto now = std::chrono::time_point_cast<std::chrono::seconds>(std::chrono::system_clock::now());
-    using sys_seconds = decltype(now);
+
     this->lodgeDate = now.time_since_epoch().count();
-
+    this->journal = journal;
     this->longTermGoalId = ltgId;
-
-    /*
-    to convert time back fron (long) duration to time_point 
-
-    1)
-    std::chrono::time_point<std::chrono::system_clock> dt(std::chrono::seconds(duration));
-    dt is now the value we need to use
-
-    2)
-    auto now = std::chrono::time_point_cast<std::chrono::seconds>(std::chrono::system_clock::now());
-    using sys_seconds = decltype(now);
-    sys_seconds dt{std::chrono::seconds{duration}};
-    */
 }
 
 // TODO: take input number of journals logded, and delete excess journals
 // keep only 10
-void LongTermGoalJournal::save (unsigned int journalsLodged=0) const noexcept(false)
+void LongTermGoalJournal::save (LongTermGoalJournal& obj, unsigned int journalsLodged=0) noexcept(false)
 {
     std::ofstream wfileptr;
     wfileptr.open(ltgjournals, std::ios::app | std::ios::out);
@@ -75,7 +59,7 @@ void LongTermGoalJournal::save (unsigned int journalsLodged=0) const noexcept(fa
     {
         throw std::runtime_error("Couldnot save the journal for the Goal!!");
     }
-    wfileptr << this;
+    wfileptr << obj;
     wfileptr.close();
 
     // if (journalsLodged > 10)
@@ -134,12 +118,8 @@ std::vector<LongTermGoalJournal> LongTermGoalJournal::getJournals (unsigned int 
 
     LongTermGoalJournal obj;
 
-    while (!fileptr.eof())
-    {
-        std::getline(fileptr, obj.journal, '$');
-        fileptr >> obj.lodgeDate;
-        fileptr >> obj.longTermGoalId;
-
+    while (!(fileptr >> obj).eof())
+    {        
         if (obj.longTermGoalId == goalId)
         {
             journals.push_back(obj);
@@ -150,14 +130,15 @@ std::vector<LongTermGoalJournal> LongTermGoalJournal::getJournals (unsigned int 
     return journals;
 }
 
-std::ifstream& operator >> (std::ifstream& stream, const LongTermGoalJournal& obj)
+std::ifstream& operator >> (std::ifstream& stream, LongTermGoalJournal& obj)
 {
-    stream.read((char *)&obj, sizeof(obj));
+    std::getline(stream, obj.journal, '$');
+    stream >> obj.lodgeDate >> obj.longTermGoalId;
     return stream;
 }
 
-std::ofstream& operator<<(std::ofstream& stream, const LongTermGoalJournal& obj)
+std::ofstream& operator<<(std::ofstream& stream, LongTermGoalJournal& obj)
 {
-    stream.write((char *)&obj, sizeof(obj));
+    stream << obj.journal << "$" << obj.lodgeDate << " " << obj.longTermGoalId << "\n";
     return stream;
 }

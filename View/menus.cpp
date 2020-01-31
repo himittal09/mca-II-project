@@ -1,5 +1,5 @@
-#ifndef __MENUMH__
-    #define __MENUMH__
+#ifndef __MENUVH__
+    #define __MENUVH__
     #include "./menus.h"
 #endif
 
@@ -10,7 +10,6 @@
 
 void welcomeBanner ()
 {
-    using std::cin;
     using std::cout;
     using std::endl;
 

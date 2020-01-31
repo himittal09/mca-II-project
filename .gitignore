@@ -3,5 +3,4 @@ jwt/
 
 *.exe
 *.out
-
-*.bat
+*.o

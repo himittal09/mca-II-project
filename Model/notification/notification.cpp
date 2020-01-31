@@ -28,11 +28,6 @@
 //     #include "../../Controller/filesystem.hpp"
 // #endif
 
-#ifndef _LIMITS_
-    #define _LIMITS_
-    #include <limits>
-#endif
-
 std::string notificationFilePath = std::string("notifications.dat");
 
 NotificationService::NotificationService ()
@@ -78,19 +73,15 @@ std::vector<std::string> NotificationService::getAllNotifications (unsigned int 
     }
 
     NotificationService obj;
-    while (!stream.eof())
+    while (!(stream >> obj).eof())
     {
-        stream >> obj;
-        if (obj.notification.length() > 0)
+        if (obj.userId == userId)
         {
-            if (obj.userId == userId)
-            {
-                notifications.push_back(obj.notification);
-            }
-            else
-            {
-                writeStream << obj;
-            }
+            notifications.push_back(obj.notification);
+        }
+        else
+        {
+            writeStream << obj;
         }
     }
     stream.close();
@@ -116,7 +107,6 @@ std::ifstream& operator >> (std::ifstream& stream, NotificationService& obj)
 {
     std::getline(stream, obj.notification, '$');
     stream >> obj.userId;
-    stream.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     return stream;
 }
 

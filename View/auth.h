@@ -3,7 +3,7 @@
     #include "../Model/auth/auth.h"
 #endif
 
-bool authMenu (AuthModule& authProvider);
+bool authMenu ();
 int askAuthMenu ();
-bool tryLogin (AuthModule& authProvider);
-bool trySignup (AuthModule& authProvider);
+bool tryLogin ();
+bool trySignup ();

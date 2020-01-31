@@ -20,12 +20,13 @@ class MonthlyPlanner
 public:
     MonthlyPlanner () noexcept;
     MonthlyPlanner (std::string plan) noexcept(false);
-    unsigned int save () noexcept(false);
+
     void completePlan () noexcept(false);
     
+    static void save (MonthlyPlanner& obj) noexcept(false);
     static std::vector<MonthlyPlanner> getallPlans (bool getCompleted) noexcept(false);
     static void checkAnRemoveExpiredPlan () noexcept(false);
 
-    friend std::ifstream& operator >> (std::ifstream&, const MonthlyPlanner& obj);
-    friend std::ofstream& operator << (std::ofstream&, const MonthlyPlanner& obj);
+    friend std::ifstream& operator >> (std::ifstream&, MonthlyPlanner& obj);
+    friend std::ofstream& operator << (std::ofstream&, MonthlyPlanner& obj);
 };

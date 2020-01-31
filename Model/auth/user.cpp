@@ -18,11 +18,6 @@
     #include <stdexcept>
 #endif
 
-#ifndef _LIMITS_
-    #define _LIMITS_
-    #include <limits>
-#endif
-
 std::string userFilename = std::string("user.dat");
 
 unsigned int User::getUsersCount () noexcept(false)
@@ -34,11 +29,9 @@ unsigned int User::getUsersCount () noexcept(false)
         throw std::runtime_error("Couldn't get the journals to display!!");
     }
 
-    std::string str;
     unsigned int fileLength = 0;
-    while (!fileptr.eof())
+    for (std::string str; std::getline(fileptr, str); )
     {
-        std::getline(fileptr, str);
         fileLength++;
     }
 
@@ -77,9 +70,8 @@ unsigned int User::findOne (std::string email) noexcept(false)
     
     User st;
 
-    while (!fp.eof())
+    while (!(fp >> st).eof())
     {
-        fp >> st;
         if (st.email == email)
         {
             fp.close();
@@ -114,9 +106,8 @@ User User::findByCredentials (std::string email, std::string password) noexcept(
     
     User st;
 
-    while (!fp.eof())
+    while (!(fp >> st).eof())
     {
-        fp >> st;
         if (st.email == email)
         {
             if (st.password == password)
@@ -141,7 +132,6 @@ std::ifstream& operator >> (std::ifstream& stream, User& obj)
     std::getline(stream, obj.email, '$');
     std::getline(stream, obj.password, '$');
     stream >> obj.userId;
-    stream.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     return stream;
 }
 

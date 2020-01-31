@@ -14,3 +14,6 @@ g++ -std=c++11 ./Model/auth/user.cpp ./Model/auth/auth.cpp ./Model/todos/todo.cp
 
 
 https://stackoverflow.com/questions/272900/undefined-reference-to-static-class-member
+
+http://www.cplusplus.com/forum/articles/10515/
+http://www.cplusplus.com/articles/4z18T05o/

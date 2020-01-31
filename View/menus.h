@@ -1,10 +1,10 @@
-#ifndef __AUTHMH__
-    #define __AUTHMH__
+#ifndef __AUTHVH__
+    #define __AUTHVH__
     #include "./auth.h"
 #endif
 
-#ifndef __MMMH__
-    #define __MMMH__
+#ifndef __MMENUVH__
+    #define __MMENUVH__
     #include "./Main/mainmenu.h"
 #endif
 

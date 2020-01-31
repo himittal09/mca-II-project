@@ -17,9 +17,10 @@ class LongTermGoalJournal
 public:
     LongTermGoalJournal () noexcept;
     LongTermGoalJournal (std::string journal, unsigned int ltgId) noexcept;
-    void save (unsigned int journalsLodged) const noexcept(false);
+    
+    static void save (LongTermGoalJournal& obj, unsigned int journalsLodged) noexcept(false);
     static std::vector<LongTermGoalJournal> getJournals (unsigned int goalId) noexcept(false);
 
-    friend std::ifstream& operator >> (std::ifstream&, const LongTermGoalJournal& obj);
-    friend std::ofstream& operator << (std::ofstream&, const LongTermGoalJournal& obj);
+    friend std::ifstream& operator >> (std::ifstream&, LongTermGoalJournal& obj);
+    friend std::ofstream& operator << (std::ofstream&, LongTermGoalJournal& obj);
 };

@@ -3,14 +3,19 @@
     #include "./monthly-planner.h"
 #endif
 
-#ifndef __AP__
-    #define __AP__
-    #include "../auth/auth-provider.cpp"
+#ifndef __APH__
+    #define __APH__
+    #include "../../Controller/auth-provider.h"
 #endif
 
 #ifndef __NOTIFICATIONH__
     #define __NOTIFICATIONH__
     #include "../notification/notification.h"
+#endif
+
+#ifndef __UTILSH__
+    #define __UTILSH__
+    #include "../../Controller/util.h"
 #endif
 
 #ifndef _IOSTREAM_
@@ -40,7 +45,7 @@
 
 std::string mpFilePath = std::string("monthlyplanner.dat");
 
-static unsigned int MonthlyPlanner::getPlannerCount () noexcept(false)
+unsigned int MonthlyPlanner::getPlannerCount () noexcept(false)
 {
     std::ifstream stream;
     stream.open(mpFilePath, std::ios::in);
@@ -48,13 +53,15 @@ static unsigned int MonthlyPlanner::getPlannerCount () noexcept(false)
     {
         throw std::runtime_error("Couldn't get the monthly plans to display!!");
     }
+    
+    unsigned int fileLength = 0;
 
-    stream.seekg(0, std::ios::end);
-
-    unsigned int fileLength = stream.tellg();
-
+    for (std::string str; std::getline(stream, str); )
+    {
+        fileLength++;
+    }
     stream.close();
-    return fileLength / sizeof(MonthlyPlanner);
+    return fileLength-1;
 }
 
 MonthlyPlanner::MonthlyPlanner () noexcept
@@ -64,12 +71,12 @@ MonthlyPlanner::MonthlyPlanner () noexcept
 
 MonthlyPlanner::MonthlyPlanner (std::string monthlyPlan) noexcept(false)
 {
-    auto now = std::chrono::system_clock::now();
+    auto now = std::chrono::time_point_cast<std::chrono::seconds>(std::chrono::system_clock::now());
 
     this->monthlyPlan = monthlyPlan;
     this->isCompleted = false;
     this->userId = auth::authProvider->getAuthenticatedUserId();
-    this->createdAt = now.time_since_epoch().count;
+    this->createdAt = now.time_since_epoch().count();
     
     try
     {
@@ -78,10 +85,10 @@ MonthlyPlanner::MonthlyPlanner (std::string monthlyPlan) noexcept(false)
     catch(const std::runtime_error& e)
     {
         throw e;
-    }    
+    }
 }
 
-unsigned int MonthlyPlanner::save () noexcept(false)
+void MonthlyPlanner::save(MonthlyPlanner& obj) noexcept(false)
 {
     std::ofstream writestream;
     writestream.open(mpFilePath, std::ios::app | std::ios::out);
@@ -89,26 +96,52 @@ unsigned int MonthlyPlanner::save () noexcept(false)
     {
         throw std::runtime_error("Couldn't save the plan in the database");
     }
-    writestream << this;
+    writestream << obj;
     writestream.close();
-    return this->plannerId;
 }
 
 void MonthlyPlanner::completePlan () noexcept(false)
 {
+    if (this->isCompleted)
+    {
+        return;
+    }
+    this->isCompleted = true;
+
+    std::ifstream rstream;
+    rstream.open(mpFilePath, std::ios::in);
+    if (!rstream.good())
+    {
+        throw std::runtime_error("Cannot reach the database to complete the Plan now!!");
+    }
+
     std::ofstream wstream;
-    wstream.open(mpFilePath, std::ios::app | std::ios::out);
+    wstream.open("temp.dat", std::ios::out);
     if (!wstream.good())
     {
         throw std::runtime_error("Cannot reach the database to complete the Plan now!!");
     }
-    this->isCompleted = true;
-    wstream.seekp((this->plannerId - 1) * sizeof(MonthlyPlanner), std::ios::beg);
-    wstream << this;
+
+    MonthlyPlanner obj;
+
+    while (!(rstream >> obj).eof())
+    {
+        if (obj.plannerId == this->plannerId)
+        {
+            obj.isCompleted = true;
+            this->isCompleted = true;
+        }
+        wstream << obj;
+    }
+
     wstream.close();
+    rstream.close();
+
+    remove(mpFilePath.c_str());
+    rename("temp.dat", mpFilePath.c_str());
 }
 
-static std::vector<MonthlyPlanner> MonthlyPlanner::getallPlans (bool getCompleted) noexcept(false)
+std::vector<MonthlyPlanner> MonthlyPlanner::getallPlans (bool getCompleted) noexcept(false)
 {
     std::vector<MonthlyPlanner> myPlans;
 
@@ -121,9 +154,8 @@ static std::vector<MonthlyPlanner> MonthlyPlanner::getallPlans (bool getComplete
     }
 
     MonthlyPlanner obj;
-    while (!stream.eof())
+    while (!(stream >> obj).eof())
     {
-        stream >> obj;
         if ((obj.userId == auth::authProvider->getAuthenticatedUserId()) && (obj.isCompleted == getCompleted))
         {
             myPlans.push_back(obj);
@@ -133,19 +165,51 @@ static std::vector<MonthlyPlanner> MonthlyPlanner::getallPlans (bool getComplete
     return myPlans;
 }
 
-static void MonthlyPlanner::checkAnRemoveExpiredPlan () noexcept(false)
+void MonthlyPlanner::checkAnRemoveExpiredPlan () noexcept(false)
 {
-    
+    std::ifstream rstream;
+    rstream.open(mpFilePath, std::ios::in);
+
+    if (!rstream.good())
+    {
+        throw std::runtime_error("Cannot access monthly plans at the movement");
+    }
+
+    MonthlyPlanner obj;
+    bool toRemovePlans = false;
+    while (!(rstream >> obj).eof())
+    {
+        // to execute block only once
+        if (!toRemovePlans && monthDiffFromNow(obj.createdAt) != 0)
+        {
+            toRemovePlans = true;
+        }
+        if (toRemovePlans)
+        {
+            NotificationService::pushNotification(obj.monthlyPlan, obj.userId);
+        }
+    }
+
+    rstream.close();
+    if (toRemovePlans)
+    {
+        // open file in truncate mode and delete all content
+        std::ofstream ofs;
+        ofs.open(mpFilePath, std::ios::trunc | std::ios::out);
+        ofs.close();
+    }
 }
 
-friend std::ifstream& operator >> (std::ifstream&, const MonthlyPlanner& obj)
+std::ifstream& operator >> (std::ifstream& stream, MonthlyPlanner& obj)
 {
-    stream.read((char *)&obj, sizeof(obj));
+    std::getline(stream, obj.monthlyPlan, '$');
+    stream >> obj.plannerId >> obj.userId >> obj.createdAt >> obj.isCompleted;
     return stream;
 }
 
-friend std::ofstream& operator << (std::ofstream&, const MonthlyPlanner& obj)
+std::ofstream& operator << (std::ofstream& stream, MonthlyPlanner& obj)
 {
-    stream.write((char *)&obj, sizeof(obj));
+    stream << obj.monthlyPlan << "$" << obj.plannerId << " " << obj.userId << " ";
+    stream << obj.createdAt << " " << obj.isCompleted;
     return stream;
 }

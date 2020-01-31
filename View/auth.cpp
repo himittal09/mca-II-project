@@ -1,15 +1,15 @@
-#ifndef __UTILS__
-    #define __UTILS__
-    #include "../Controller/util.cpp"
+#ifndef __UTILSH__
+    #define __UTILSH__
+    #include "../Controller/util.h"
 #endif
 
-#ifndef __AUTHH__
-    #define __AUTHH__
-    #include "../Model/auth/auth.h"
+#ifndef __APH__
+    #define __APH__
+    #include "../Controller/auth-provider.h"
 #endif
 
-#ifndef __AUTHMH__
-    #define __AUTHMH__
+#ifndef __AUTHVH__
+    #define __AUTHVH__
     #include "./auth.h"
 #endif
 
@@ -26,7 +26,7 @@
 using namespace std;
 
 // return true for exit request
-bool authMenu (AuthModule& authProvider)
+bool authMenu ()
 {
     bool success = false;
     int option=0;
@@ -35,11 +35,11 @@ bool authMenu (AuthModule& authProvider)
         option = askAuthMenu();
         if (option == 1)
         {
-            success = tryLogin(authProvider);
+            success = tryLogin();
         }
         else if (option == 2)
         {
-            success = trySignup(authProvider);
+            success = trySignup();
         }
         else if (option == 3)
         {
@@ -72,7 +72,7 @@ int askAuthMenu ()
     return option;
 }
 
-bool tryLogin (AuthModule& authProvider)
+bool tryLogin ()
 {   
     string email, password;
     cout << "Email: ";
@@ -81,7 +81,7 @@ bool tryLogin (AuthModule& authProvider)
     cin >> password;
     try
     {
-        authProvider.loginUser(email, password);
+        auth::authProvider->loginUser(email, password);
     }
     catch(const std::runtime_error& e)
     {
@@ -91,7 +91,7 @@ bool tryLogin (AuthModule& authProvider)
     return true;
 }
 
-bool trySignup (AuthModule& authProvider)
+bool trySignup ()
 {
     std::string email, password, name;
     cout << "Email: ";
@@ -103,7 +103,7 @@ bool trySignup (AuthModule& authProvider)
     std::getline(std::cin, name);
     try
     {
-        authProvider.signupUser(email, password, name);
+        auth::authProvider->signupUser(email, password, name);
     }
     catch(const std::runtime_error& e)
     {
