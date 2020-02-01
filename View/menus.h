@@ -1,6 +1,6 @@
 #ifndef __AUTHVH__
     #define __AUTHVH__
-    #include "./auth.h"
+    #include "./authview.h"
 #endif
 
 #ifndef __MMENUVH__

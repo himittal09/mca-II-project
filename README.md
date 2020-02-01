@@ -9,5 +9,4 @@ Possible to extend to use a real database like [mongodb](http://mongocxx.org/mon
 Possible to make RESTful APIs tosimulate behaviour like that of nodejs and also extend the project to go global instead of working on localhost.
 [Library to make http server in c(++)](https://code.google.com/archive/p/mongoose/)
 
-chrono reference from [here](https://en.cppreference.com/w/cpp/chrono)
-https://en.cppreference.com/w/cpp/chrono/duration
+chrono reference from [here](https://en.cppreference.com/w/cpp/chrono) and [here](https://en.cppreference.com/w/cpp/chrono/duration)

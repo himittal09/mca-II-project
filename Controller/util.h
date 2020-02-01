@@ -7,8 +7,7 @@
  * This function will return true if val ∈ [floor, ceil]
  * false otherwise
 */
-template <class T>
-bool clamp (T val, T floor, T ceil);
+bool clamp (int val, int floor, int ceil);
 
 // from seconds to epoch to timestamp
 std::chrono::system_clock::time_point convertTime (int64_t& timePoint);

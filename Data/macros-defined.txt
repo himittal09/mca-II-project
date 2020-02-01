@@ -36,8 +36,8 @@
 
 ./View/menus.h                                      __MENUVH__
 ./View/menus.cpp                                    __MENUV__
-./View/auth.h                                       __AUTHVH__
-./View/auth.cpp                                     __AUTHV__
+./View/authview.h                                       __AUTHVH__
+./View/authview.cpp                                     __AUTHV__
 
 ./View/Main/mainmenu.h                              __MMENUVH__
 ./View/Main/mainmenu.cpp                            __MMENUV__

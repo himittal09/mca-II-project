@@ -8,6 +8,11 @@
     #include "../../Controller/auth-provider.h"
 #endif
 
+#ifndef __NOTIFICATIONH__
+    #define __NOTIFICATIONH__
+    #include "../../Model/notification/notification.h"
+#endif
+
 #ifndef __MMENUVH__
     #define __MMENUVH__
     #include "./mainmenu.h"
@@ -19,7 +24,7 @@ using namespace std;
 bool mainMenu ()
 {
     bool success = false;
-    unsigned int option;
+    int option;
     do
     {
         option = askmainMenu();
@@ -45,7 +50,7 @@ bool mainMenu ()
         }
         else if (option == 6)
         {
-        // cout << "5. Logout\n";
+            auth::authProvider->logoutUser();
         }
         else if (option == 7)
         {
@@ -55,9 +60,9 @@ bool mainMenu ()
     return false;
 }
 
-unsigned int askmainMenu ()
+int askmainMenu ()
 {
-    unsigned int option=0;
+    int option=0;
     while (true)
     {
         cout << "\n1. To-do list\n";
@@ -69,7 +74,7 @@ unsigned int askmainMenu ()
         cout << "7. Exit\n";
         cout << "Choose a option: ";
         cin >> option;
-        if (clamp(option, 1u, 7u))
+        if (clamp(option, 1, 7))
         {
             break;
         }
@@ -79,4 +84,21 @@ unsigned int askmainMenu ()
         }
     }
     return option;
+}
+
+void printNotifications ()
+{
+    std::vector<std::string> notifications = NotificationService::getAllNotifications(auth::authProvider->getAuthenticatedUserId());
+    if (!notifications.size())
+    {
+        cout << "No new Notifications!!\n";
+        return;
+    }
+    else
+    {
+        for (std::string notification: notifications)
+        {
+            cout << notification << "\n";
+        }
+    }
 }

@@ -23,8 +23,7 @@
     #include <cstdlib>
 #endif
 
-template <class T>
-bool clamp (T val, T floor, T ceil)
+bool clamp (int val, int floor, int ceil)
 {
     return ((val <= ceil) && (val >= floor));
 }

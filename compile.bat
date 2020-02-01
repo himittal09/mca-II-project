@@ -12,4 +12,8 @@ g++ -std=c++14 -c ./View/menus.cpp -o ./Build/__MENUV__.o
 g++ -std=c++14 -c ./View/Main/mainmenu.cpp -o ./Build/__MMENUV__.o
 g++ -std=c++14 -c ./main.cpp -o ./Build/__MAINFILE__.o
 
+cd Build
+
+g++ *.o -o ProductivityTracker.exe
+
 del *.o

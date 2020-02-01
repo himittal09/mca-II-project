@@ -1,2 +1,3 @@
 bool mainMenu ();
-unsigned int askmainMenu ();
+int askmainMenu ();
+void printNotifications ();
