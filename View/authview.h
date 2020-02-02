@@ -5,5 +5,5 @@
 
 bool authMenu ();
 int askAuthMenu ();
-bool tryLogin ();
-bool trySignup ();
+void tryLogin ();
+void trySignup ();

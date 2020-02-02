@@ -18,45 +18,60 @@
     #include "./mainmenu.h"
 #endif
 
+#ifndef __ATVH__
+    #define __ATVH__
+    #include "./activity-tracker.h"
+#endif
+
+#ifndef __LTGVH__
+    #define __LTGVH__
+    #include "./long-term-goal-view.h"
+#endif
+
+#ifndef __MONTHLYVH__
+    #define __MONTHLYVH__
+    #include "./monthly-planner-view.h"
+#endif
+
+#ifndef __TODOVH__
+    #define __TODOVH__
+    #include "./todo-list-view.h"
+#endif
+
 using namespace std;
 
 // return true for exit request
 bool mainMenu ()
 {
-    bool success = false;
-    int option;
-    do
+    int option = askmainMenu();
+    if (option == 1)
     {
-        option = askmainMenu();
-        if (option == 1)
-        {
-            // cout << "\n1. To-do list\n";
-        }
-        else if (option == 2)
-        {
-        // cout << "2. Monthly Goal Tracker\n";
-        }
-        else if (option == 3)
-        {
-        // cout << "3. go on streak\n";
-        }
-        else if (option == 4)
-        {
-        // cout << "4. Long term goal tracker\n";
-        }
-        else if (option == 5)
-        {
-            // notifications
-        }
-        else if (option == 6)
-        {
-            auth::authProvider->logoutUser();
-        }
-        else if (option == 7)
-        {
-            return true;
-        }
-    } while (!success);
+        // cout << "\n1. To-do list\n";
+    }
+    else if (option == 2)
+    {
+    // cout << "2. Monthly Goal Tracker\n";
+    }
+    else if (option == 3)
+    {
+    // cout << "3. go on streak\n";
+    }
+    else if (option == 4)
+    {
+    // cout << "4. Long term goal tracker\n";
+    }
+    else if (option == 5)
+    {
+        printNotifications();
+    }
+    else if (option == 6)
+    {
+        auth::authProvider->logoutUser();
+    }
+    else if (option == 7)
+    {
+        return true;
+    }
     return false;
 }
 

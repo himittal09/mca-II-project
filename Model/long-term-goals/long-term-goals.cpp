@@ -50,7 +50,7 @@ std::string ltgFilePath = std::string("longtermgoal.dat");
 //     std::ofstream wstream;
 //     wstream.open(ltgFilePath, std::ios::app | std::ios::out);
 
-//     if (!wstream.good())
+//     if (!wstream.is_open())
 //     {
 //         throw std::runtime_error("Cannot determine the journals lodged count!!");
 //     }
@@ -64,21 +64,21 @@ std::string ltgFilePath = std::string("longtermgoal.dat");
 unsigned int LongTermGoals::getGoalsCount () noexcept(false)
 {
     std::ifstream fileptr;
-    fileptr.open(ltgFilePath, std::ios::in);
-    if (!fileptr.good())
+    fileptr.open(ltgFilePath, std::ios::in | std::ios::app);
+    if (!fileptr.is_open())
     {
         throw std::runtime_error("Couldn't get the journals to display!!");
     }
 
     unsigned int fileLength = 0;
     
-    for (std::string str; std::getline(fileptr, str); )
+    for (std::string str; std::getline(fileptr, str); std::ws(fileptr))
     {
         fileLength++;
     }
 
     fileptr.close();
-    return fileLength-1;
+    return fileLength;
 }
 
 LongTermGoals::LongTermGoals () noexcept
@@ -111,7 +111,7 @@ void LongTermGoals::save (LongTermGoals& obj) noexcept(false)
 {
     std::ofstream writestream;
     writestream.open(ltgFilePath, std::ios::app | std::ios::out);
-    if (!writestream.good())
+    if (!writestream.is_open())
     {
         throw std::runtime_error("Couldn't save the goal in the database");
     }
@@ -124,9 +124,9 @@ std::vector<LongTermGoals> LongTermGoals::getAllGoals (bool getCompleted) noexce
     std::vector<LongTermGoals> myltg;
 
     std::ifstream stream;
-    stream.open(ltgFilePath, std::ios::in);
+    stream.open(ltgFilePath, std::ios::in | std::ios::app);
 
-    if (!stream.good())
+    if (!stream.is_open())
     {
         throw new std::runtime_error("Couldn't get all goals for displaying!!");
     }
@@ -169,15 +169,15 @@ void LongTermGoals::markGoalComplete () noexcept(false)
     this->isCompleted = true;
 
     std::ifstream rstream;
-    rstream.open(ltgFilePath, std::ios::in);
-    if (!rstream.good())
+    rstream.open(ltgFilePath, std::ios::in | std::ios::app);
+    if (!rstream.is_open())
     {
         throw std::runtime_error("Couldn't update the todo!!");
     }
 
     std::ofstream wstream;
     wstream.open("temp.dat", std::ios::out);
-    if (!wstream.good())
+    if (!wstream.is_open())
     {
         throw std::runtime_error("Couldn't update the todo!!");
     }
@@ -214,6 +214,7 @@ std::vector<LongTermGoalJournal> LongTermGoals::getMyJournals () noexcept(false)
 
 std::ifstream& operator >> (std::ifstream& stream, LongTermGoals& obj)
 {
+    std::ws(stream);
     std::getline(stream, obj.goal, '$');
     stream >> obj.LongTermGoalId >> obj.userId >> obj.lastProgress >> obj.creationDate;
     stream >> obj.journals_logded >> obj.isCompleted;

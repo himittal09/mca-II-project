@@ -36,9 +36,16 @@
 
 ./View/menus.h                                      __MENUVH__
 ./View/menus.cpp                                    __MENUV__
-./View/authview.h                                       __AUTHVH__
-./View/authview.cpp                                     __AUTHV__
+./View/authview.h                                   __AUTHVH__
+./View/authview.cpp                                 __AUTHV__
 
 ./View/Main/mainmenu.h                              __MMENUVH__
 ./View/Main/mainmenu.cpp                            __MMENUV__
-
+./View/Main/activity-tracker-view.h                 __ATVH__
+./View/Main/activity-tracker-view.cpp               __ATV__
+./View/Main/long-term-goal-view.h                   __LTGVH__
+./View/Main/long-term-goal-view.cpp                 __LTGV__
+./View/Main/monthly-planner-view.h                  __MONTHLYVH__
+./View/Main/monthly-planner-view.cpp                __MONTHLYV__
+./View/Main/todo-list-view.h                        __TODOVH__
+./View/Main/todo-list-view.cpp                      __TODOV__

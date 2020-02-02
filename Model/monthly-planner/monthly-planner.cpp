@@ -48,20 +48,20 @@ std::string mpFilePath = std::string("monthlyplanner.dat");
 unsigned int MonthlyPlanner::getPlannerCount () noexcept(false)
 {
     std::ifstream stream;
-    stream.open(mpFilePath, std::ios::in);
-    if (!stream.good())
+    stream.open(mpFilePath, std::ios::in | std::ios::app);
+    if (!stream.is_open())
     {
         throw std::runtime_error("Couldn't get the monthly plans to display!!");
     }
     
     unsigned int fileLength = 0;
 
-    for (std::string str; std::getline(stream, str); )
+    for (std::string str; std::getline(stream, str); std::ws(stream))
     {
         fileLength++;
     }
     stream.close();
-    return fileLength-1;
+    return fileLength;
 }
 
 MonthlyPlanner::MonthlyPlanner () noexcept
@@ -92,7 +92,7 @@ void MonthlyPlanner::save(MonthlyPlanner& obj) noexcept(false)
 {
     std::ofstream writestream;
     writestream.open(mpFilePath, std::ios::app | std::ios::out);
-    if (!writestream.good())
+    if (!writestream.is_open())
     {
         throw std::runtime_error("Couldn't save the plan in the database");
     }
@@ -109,15 +109,15 @@ void MonthlyPlanner::completePlan () noexcept(false)
     this->isCompleted = true;
 
     std::ifstream rstream;
-    rstream.open(mpFilePath, std::ios::in);
-    if (!rstream.good())
+    rstream.open(mpFilePath, std::ios::in | std::ios::app);
+    if (!rstream.is_open())
     {
         throw std::runtime_error("Cannot reach the database to complete the Plan now!!");
     }
 
     std::ofstream wstream;
     wstream.open("temp.dat", std::ios::out);
-    if (!wstream.good())
+    if (!wstream.is_open())
     {
         throw std::runtime_error("Cannot reach the database to complete the Plan now!!");
     }
@@ -146,9 +146,9 @@ std::vector<MonthlyPlanner> MonthlyPlanner::getallPlans (bool getCompleted) noex
     std::vector<MonthlyPlanner> myPlans;
 
     std::ifstream stream;
-    stream.open(mpFilePath, std::ios::in);
+    stream.open(mpFilePath, std::ios::in | std::ios::app);
 
-    if (!stream.good())
+    if (!stream.is_open())
     {
         throw new std::runtime_error("Couldn't get all plans for displaying!!");
     }
@@ -168,9 +168,9 @@ std::vector<MonthlyPlanner> MonthlyPlanner::getallPlans (bool getCompleted) noex
 void MonthlyPlanner::checkAnRemoveExpiredPlan () noexcept(false)
 {
     std::ifstream rstream;
-    rstream.open(mpFilePath, std::ios::in);
+    rstream.open(mpFilePath, std::ios::in | std::ios::app);
 
-    if (!rstream.good())
+    if (!rstream.is_open())
     {
         throw std::runtime_error("Cannot access monthly plans at the movement");
     }
@@ -202,6 +202,7 @@ void MonthlyPlanner::checkAnRemoveExpiredPlan () noexcept(false)
 
 std::ifstream& operator >> (std::ifstream& stream, MonthlyPlanner& obj)
 {
+    std::ws(stream);
     std::getline(stream, obj.monthlyPlan, '$');
     stream >> obj.plannerId >> obj.userId >> obj.createdAt >> obj.isCompleted;
     return stream;

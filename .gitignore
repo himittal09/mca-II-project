@@ -4,3 +4,5 @@ jwt/
 *.exe
 *.out
 *.o
+*.dat
+*.txt

@@ -23,20 +23,20 @@ std::string userFilename = std::string("user.dat");
 unsigned int User::getUsersCount () noexcept(false)
 {
     std::ifstream fileptr;
-    fileptr.open(userFilename, std::ios::in);
-    if (!fileptr.good())
+    fileptr.open(userFilename, std::ios::in | std::ios::app);
+    if (!fileptr.is_open())
     {
         throw std::runtime_error("Couldn't get the journals to display!!");
     }
 
     unsigned int fileLength = 0;
-    for (std::string str; std::getline(fileptr, str); )
+    for (std::string str; std::getline(fileptr, str); std::ws(fileptr))
     {
         fileLength++;
     }
 
     fileptr.close();
-    return fileLength-1;
+    return fileLength;
 }
 
 User::User (std::string email, std::string password, std::string name) noexcept(false)
@@ -62,8 +62,17 @@ User::User () noexcept
 unsigned int User::findOne (std::string email) noexcept(false)
 {
     std::ifstream fp;
-    fp.open(userFilename, std::ios::in);
-    if (!fp.good())
+    
+    // fp.open(userFilename, std::ios::in);
+    // if (!fp.is_open())
+    // {
+    //     fp.clear();
+    //     fp.open(userFilename, std::ios::trunc);
+    //     fp.close();
+    // }
+
+    fp.open(userFilename, std::ios::in | std::ios::app);
+    if (!fp.is_open())
     {
         throw std::runtime_error("Unable to access user data, cannot perform operation now!!");
     }
@@ -87,9 +96,9 @@ void User::save (User user) noexcept(false)
 {
     std::ofstream fp;
     fp.open(userFilename, std::ios::app | std::ios::out);
-    if (!fp.good())
+    if (!fp.is_open())
     {
-        throw std::runtime_error("Unable to access user data, cannot perform operation now!!");
+        throw std::runtime_error("Unable to save user data, cannot perform operation now!!");
     }
     fp << user;
     fp.close();
@@ -98,8 +107,8 @@ void User::save (User user) noexcept(false)
 User User::findByCredentials (std::string email, std::string password) noexcept(false)
 {
     std::ifstream fp;
-    fp.open(userFilename, std::ios::in);
-    if (!fp.good())
+    fp.open(userFilename, std::ios::in | std::ios::app);
+    if (!fp.is_open())
     {
         throw std::runtime_error("Unable to access user data, cannot perform operation now!!");
     }
@@ -112,24 +121,29 @@ User User::findByCredentials (std::string email, std::string password) noexcept(
         {
             if (st.password == password)
             {
-                break;
+                return st;
             }
             else
             {
                 throw std::runtime_error("Password Incorrect!!");
             }
-            
         }
     }
 
     fp.close();
+
+    // hackaround to problem of creating new user object and returning if a user not found
+    st.userId = 0;
     return st;
 }
 
 std::ifstream& operator >> (std::ifstream& stream, User& obj)
 {
+    std::ws(stream);
     std::getline(stream, obj.name, '$');
+    std::ws(stream);
     std::getline(stream, obj.email, '$');
+    std::ws(stream);
     std::getline(stream, obj.password, '$');
     stream >> obj.userId;
     return stream;

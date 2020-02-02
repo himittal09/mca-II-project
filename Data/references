@@ -17,3 +17,6 @@ https://stackoverflow.com/questions/272900/undefined-reference-to-static-class-m
 
 http://www.cplusplus.com/forum/articles/10515/
 http://www.cplusplus.com/articles/4z18T05o/
+
+Basically ios::in requires to already have an existing file.
+Append ios::app to create the file if it doesn't exists

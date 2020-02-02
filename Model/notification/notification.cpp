@@ -45,7 +45,7 @@ void NotificationService::pushNotification (std::string notification, unsigned i
 {
     std::ofstream writestream;
     writestream.open(notificationFilePath, std::ios::app);
-    if (!writestream.good())
+    if (!writestream.is_open())
     {
         throw std::runtime_error("Couldn't push the notification");
     }
@@ -59,15 +59,15 @@ std::vector<std::string> NotificationService::getAllNotifications (unsigned int 
     std::vector<std::string> notifications;
 
     std::ifstream stream;
-    stream.open(notificationFilePath, std::ios::in);
-    if (!stream.good())
+    stream.open(notificationFilePath, std::ios::in | std::ios::app);
+    if (!stream.is_open())
     {
         throw new std::runtime_error("Couldn't get all notifications for displaying!!");
     }
 
     std::ofstream writeStream;
     writeStream.open("temp.dat", std::ios::out);
-    if (!writeStream.good())
+    if (!writeStream.is_open())
     {
         throw new std::runtime_error("Couldn't get all notifications for displaying!!");
     }
@@ -105,6 +105,7 @@ std::vector<std::string> NotificationService::getAllNotifications (unsigned int 
 
 std::ifstream& operator >> (std::ifstream& stream, NotificationService& obj)
 {
+    std::ws(stream);
     std::getline(stream, obj.notification, '$');
     stream >> obj.userId;
     return stream;

@@ -55,7 +55,7 @@ void LongTermGoalJournal::save (LongTermGoalJournal& obj, unsigned int journalsL
 {
     std::ofstream wfileptr;
     wfileptr.open(ltgjournals, std::ios::app | std::ios::out);
-    if (!wfileptr.good())
+    if (!wfileptr.is_open())
     {
         throw std::runtime_error("Couldnot save the journal for the Goal!!");
     }
@@ -68,14 +68,14 @@ void LongTermGoalJournal::save (LongTermGoalJournal& obj, unsigned int journalsL
     //     std::ifstream rfileptr;
     //     bool recordToDeleteMissed = false;
 
-    //     rfileptr.open(ltgjournals, std::ios::in);
-    //     if (!rfileptr.good())
+    //     rfileptr.open(ltgjournals, std::ios::in | std::ios::app);
+    //     if (!rfileptr.is_open())
     //     {
     //         throw std::runtime_error("Unable to process deletion of extra journals");
     //     }
 
     //     wfileptr.open("temp.dat",std::ios::out);
-    //     if (!wfileptr.good())
+    //     if (!wfileptr.is_open())
     //     {
     //         throw std::runtime_error("Unable to process deletion of extra journals");
     //     }
@@ -110,8 +110,8 @@ std::vector<LongTermGoalJournal> LongTermGoalJournal::getJournals (unsigned int 
     std::vector<LongTermGoalJournal> journals;
     
     std::ifstream fileptr;
-    fileptr.open(ltgjournals, std::ios::in);
-    if (!fileptr.good())
+    fileptr.open(ltgjournals, std::ios::in | std::ios::app);
+    if (!fileptr.is_open())
     {
         throw std::runtime_error("Couldn't get the journals to display!!");
     }
@@ -132,6 +132,7 @@ std::vector<LongTermGoalJournal> LongTermGoalJournal::getJournals (unsigned int 
 
 std::ifstream& operator >> (std::ifstream& stream, LongTermGoalJournal& obj)
 {
+    std::ws(stream);
     std::getline(stream, obj.journal, '$');
     stream >> obj.lodgeDate >> obj.longTermGoalId;
     return stream;

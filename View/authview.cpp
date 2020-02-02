@@ -28,25 +28,19 @@ using namespace std;
 // return true for exit request
 bool authMenu ()
 {
-    bool success = false;
-    int option=0;
-    while (!success)
+    int option = askAuthMenu();
+    if (option == 1)
     {
-        option = askAuthMenu();
-        if (option == 1)
-        {
-            success = tryLogin();
-        }
-        else if (option == 2)
-        {
-            success = trySignup();
-        }
-        else if (option == 3)
-        {
-            return true;
-        }
+        tryLogin();
     }
-    
+    else if (option == 2)
+    {
+        trySignup();
+    }
+    else if (option == 3)
+    {
+        return true;
+    }    
     return false;
 }
 
@@ -72,7 +66,7 @@ int askAuthMenu ()
     return option;
 }
 
-bool tryLogin ()
+void tryLogin ()
 {   
     string email, password;
     cout << "Email: ";
@@ -86,12 +80,10 @@ bool tryLogin ()
     catch(const std::runtime_error& e)
     {
         cout << endl << e.what();
-        return false;
     }
-    return true;
 }
 
-bool trySignup ()
+void trySignup ()
 {
     std::string email, password, name;
     cout << "Email: ";
@@ -99,7 +91,7 @@ bool trySignup ()
     cout << "Password: ";
     cin >> password;
     cout << "Your Name: ";
-    cin.clear();
+    std::ws(cin);
     std::getline(std::cin, name);
     try
     {
@@ -108,7 +100,5 @@ bool trySignup ()
     catch(const std::runtime_error& e)
     {
         cout << endl << e.what();
-        return false;
     }
-    return true;
 }

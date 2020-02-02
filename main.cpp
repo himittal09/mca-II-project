@@ -28,6 +28,7 @@ int main ()
     {
         if (auth::authProvider->getIfUserAuthenticated())
         {
+            std::cout << "Welcome user" << auth::authProvider->getAuthenticatedUsername() << "\n";
             exitRequest = mainMenu ();
         }
         else
