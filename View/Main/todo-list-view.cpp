@@ -126,7 +126,7 @@ void displayTodos ()
     {
         return;
     }
-    cout << "\nEnter todo number to complete it: ";
+    cout << "\nEnter todo number to complete it (0 to ignore): ";
     cin >> todoNum;
     try
     {

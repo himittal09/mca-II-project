@@ -13,14 +13,14 @@
     #include "../../Controller/auth-provider.h"
 #endif
 
+#ifndef __UTILSH__
+    #define __UTILSH__
+    #include "../../Controller/util.h"
+#endif
+
 #ifndef _IOSTREAM_
     #define _IOSTREAM_
     #include <iostream>
-#endif
-
-#ifndef _CHRONO_
-    #define _CHRONO_
-    #include <chrono>
 #endif
 
 #ifndef _FSTREAM_
@@ -88,12 +88,10 @@ LongTermGoals::LongTermGoals () noexcept
 
 LongTermGoals::LongTermGoals (std::string goal) noexcept(false)
 {
-    auto now = std::chrono::time_point_cast<std::chrono::seconds>(std::chrono::system_clock::now());
-
     this->isCompleted = false;
     this->journals_logded = 0;
     this->goal = goal;
-    this->creationDate = now.time_since_epoch().count();
+    this->creationDate = getCurrentTime();
     this->lastProgress = 0;
     this->userId = auth::authProvider->getAuthenticatedUserId();
 

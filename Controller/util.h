@@ -39,3 +39,5 @@ bool diffBetween (int64_t& lastStreakTime, int64_t& maxAllowedTime);
 void clearScreen (void);
 
 std::string printFriendlyDate (int64_t& myTime);
+
+int64_t getCurrentTime ();

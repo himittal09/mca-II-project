@@ -33,11 +33,6 @@
     #include <vector>
 #endif
 
-#ifndef _CHRONO_
-    #define _CHRONO_
-    #include <chrono>
-#endif
-
 #ifndef _STDEXCEPT_
     #define _STDEXCEPT_
     #include <stdexcept>
@@ -87,14 +82,12 @@ ActivityTracker::ActivityTracker (std::string plan, int64_t streakDuration) noex
     {
         throw e;
     }
-
-    auto now = std::chrono::time_point_cast<std::chrono::seconds>(std::chrono::system_clock::now());
     
     this->longestStreak = 0;
     this->userId = auth::authProvider->getAuthenticatedUserId();
     this->activity = plan;
     this->streakDuration = streakDuration * 60;
-    this->createdAt = now.time_since_epoch().count();
+    this->createdAt = getCurrentTime();
     this->lastCheckIn = 0;
 }
 
@@ -151,7 +144,6 @@ unsigned int ActivityTracker::checkForAllStreakMiss ()
     }
 
     ActivityTracker obj;
-    auto now = std::chrono::time_point_cast<std::chrono::seconds>(std::chrono::system_clock::now());
 
     while (!(rstream >> obj).eof())
     {
@@ -194,17 +186,17 @@ void ActivityTracker::checkIn ()
     }
 
     ActivityTracker obj;
-    auto now = std::chrono::time_point_cast<std::chrono::seconds>(std::chrono::system_clock::now());
+    int64_t now = getCurrentTime();
 
     this->longestStreak++;
-    this->lastCheckIn = now.time_since_epoch().count();
+    this->lastCheckIn = now;
 
     while (!(rstream >> obj).eof())
     {
         if (obj.activityId == this->activityId)
         {
             obj.longestStreak++;
-            obj.longestStreak = now.time_since_epoch().count();
+            obj.longestStreak = now;
         }
         wstream << obj;
     }

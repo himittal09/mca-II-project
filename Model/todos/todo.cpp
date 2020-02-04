@@ -8,14 +8,14 @@
     #include "../../Controller/auth-provider.h"
 #endif
 
+#ifndef __UTILSH__
+    #define __UTILSH__
+    #include "../../Controller/util.h"
+#endif
+
 #ifndef _IOSTREAM_
     #define _IOSTREAM_
     #include <iostream>
-#endif
-
-#ifndef _CHRONO_
-    #define _CHRONO_
-    #include <chrono>
 #endif
 
 #ifndef _FSTREAM_
@@ -63,11 +63,9 @@ Todo::Todo () noexcept
 
 Todo::Todo (std::string todoBody) noexcept(false)
 {
-    auto now = std::chrono::time_point_cast<std::chrono::seconds>(std::chrono::system_clock::now());
-
     this->todo = todoBody;
     this->completed = false;
-    this->createdAt = now.time_since_epoch().count();
+    this->createdAt = getCurrentTime();
     this->completedAt = 0;
     this->createrId = auth::authProvider->getAuthenticatedUserId();
 
@@ -123,8 +121,8 @@ void Todo::completeTodo () noexcept(false)
     {
         return;
     }
-    auto now = std::chrono::time_point_cast<std::chrono::seconds>(std::chrono::system_clock::now());
-    this->completedAt = now.time_since_epoch().count();
+    int64_t now = getCurrentTime();
+    this->completedAt = now;
     this->completed = true;
 
     std::ifstream rstream;
@@ -147,7 +145,7 @@ void Todo::completeTodo () noexcept(false)
     {
         if (obj.todoId == this->todoId)
         {
-            obj.completedAt = now.time_since_epoch().count();
+            obj.completedAt = now;
             obj.completed = true;
         }
         wstream << obj;

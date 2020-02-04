@@ -3,14 +3,14 @@
     #include "./long-term-journal.h"
 #endif
 
+#ifndef __UTILSH__
+    #define __UTILSH__
+    #include "../../Controller/util.h"
+#endif
+
 #ifndef _IOSTREAM_
     #define _IOSTREAM_
     #include <iostream>
-#endif
-
-#ifndef _CHRONO_
-    #define _CHRONO_
-    #include <chrono>
 #endif
 
 #ifndef _FSTREAM_
@@ -41,10 +41,8 @@ LongTermGoalJournal::LongTermGoalJournal () noexcept
 }
 
 LongTermGoalJournal::LongTermGoalJournal (std::string journal, unsigned int ltgId) noexcept
-{    
-    auto now = std::chrono::time_point_cast<std::chrono::seconds>(std::chrono::system_clock::now());
-
-    this->lodgeDate = now.time_since_epoch().count();
+{
+    this->lodgeDate = getCurrentTime();
     this->journal = journal;
     this->longTermGoalId = ltgId;
 }

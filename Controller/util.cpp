@@ -5,7 +5,12 @@
 
 #ifndef __DATEH__
     #define __DATEH__
-    #include "./date.h"
+    #include "./date/tz.h"
+#endif
+
+#ifndef __DATETZH__
+    #define __DATETZH__
+    #include "./date/date.h"
 #endif
 
 #ifndef _CHRONO_
@@ -93,5 +98,12 @@ std::string printFriendlyDate (int64_t& myTime)
     {
         return std::string("-");
     }
-    return date::format("[%R %D]", convertTime(myTime));
+    return date::format("[%R %d/%m/%y]", convertTime(myTime));
+}
+
+int64_t getCurrentTime ()
+{
+    // auto t = date::make_zoned(date::current_zone(), std::chrono::system_clock::now()).get_local_time();
+    // t.time_since_epoch().count();
+    return std::chrono::system_clock::now().time_since_epoch().count();
 }

@@ -23,11 +23,6 @@
     #include <iostream>
 #endif
 
-#ifndef _CHRONO_
-    #define _CHRONO_
-    #include <chrono>
-#endif
-
 #ifndef _FSTREAM_
     #define _FSTREAM_
     #include <fstream>
@@ -71,12 +66,10 @@ MonthlyPlanner::MonthlyPlanner () noexcept
 
 MonthlyPlanner::MonthlyPlanner (std::string monthlyPlan) noexcept(false)
 {
-    auto now = std::chrono::time_point_cast<std::chrono::seconds>(std::chrono::system_clock::now());
-
     this->monthlyPlan = monthlyPlan;
     this->isCompleted = false;
     this->userId = auth::authProvider->getAuthenticatedUserId();
-    this->createdAt = now.time_since_epoch().count();
+    this->createdAt = getCurrentTime();
     
     try
     {
