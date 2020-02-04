@@ -81,7 +81,7 @@ ActivityTracker::ActivityTracker (std::string plan, int64_t streakDuration) noex
 {
     try
     {
-        this->activityId = ActivityTracker::getActivityCount();
+        this->activityId = ActivityTracker::getActivityCount()+1;
     }
     catch(const std::runtime_error& e)
     {

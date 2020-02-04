@@ -10,15 +10,16 @@
 
 class Todo
 {
+
+    static unsigned int getTodoCount () noexcept(false);
+public:
     unsigned int todoId;
     unsigned int createrId;
     std::string todo;
     bool completed;
     int64_t createdAt;
     int64_t completedAt;
-
-    static unsigned int getTodoCount () noexcept(false);
-public:
+    
     Todo () noexcept;
     Todo (std::string todoBody) noexcept(false);
 

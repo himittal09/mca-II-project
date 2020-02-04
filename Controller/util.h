@@ -3,6 +3,11 @@
     #include <chrono>
 #endif
 
+#ifndef _IOSTREAM_
+    #define _IOSTREAM_
+    #include <iostream>
+#endif
+
 /**
  * This function will return true if val ∈ [floor, ceil]
  * false otherwise
@@ -28,7 +33,9 @@ long monthDiffFromNow (int64_t& timePoint);
  * maxAllowed is in seconds
  * lastStreakTime is in seconds
 */
-bool diffBetween (int64_t lastStreakTime, int64_t maxAllowedTime);
+bool diffBetween (int64_t& lastStreakTime, int64_t& maxAllowedTime);
 
 // to clear the screen contents
 void clearScreen (void);
+
+std::string printFriendlyDate (int64_t& myTime);

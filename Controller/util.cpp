@@ -3,6 +3,11 @@
     #include "./util.h"
 #endif
 
+#ifndef __DATEH__
+    #define __DATEH__
+    #include "./date.h"
+#endif
+
 #ifndef _CHRONO_
     #define _CHRONO_
     #include <chrono>
@@ -61,7 +66,7 @@ long monthDiffFromNow (int64_t& timePoint)
     return duration_cast<monthDef>(diff).count();
 }
 
-bool diffBetween (int64_t lastStreakTime, int64_t maxAllowedTime)
+bool diffBetween (int64_t& lastStreakTime, int64_t& maxAllowedTime)
 {
     using namespace std::chrono;
 
@@ -79,10 +84,14 @@ bool diffBetween (int64_t lastStreakTime, int64_t maxAllowedTime)
 
 void clearScreen (void)
 {
-    // #ifdef WIN32
-    //     system("cls");
-    // #else
-    //     system("clear");
-    // #endif
     std::cout << "\033[2J\033[1;1H";
+}
+
+std::string printFriendlyDate (int64_t& myTime)
+{
+    if (myTime == 0)
+    {
+        return std::string("-");
+    }
+    return date::format("[%R %D]", convertTime(myTime));
 }

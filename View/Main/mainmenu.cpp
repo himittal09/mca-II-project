@@ -20,7 +20,7 @@
 
 #ifndef __ATVH__
     #define __ATVH__
-    #include "./activity-tracker.h"
+    #include "./activity-tracker-view.h"
 #endif
 
 #ifndef __LTGVH__
@@ -46,7 +46,7 @@ bool mainMenu ()
     int option = askmainMenu();
     if (option == 1)
     {
-        // cout << "\n1. To-do list\n";
+        return todoMenu();
     }
     else if (option == 2)
     {
