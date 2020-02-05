@@ -50,7 +50,7 @@ bool mainMenu ()
     }
     else if (option == 2)
     {
-    // cout << "2. Monthly Goal Tracker\n";
+        return mpMenu ();
     }
     else if (option == 3)
     {
@@ -58,7 +58,7 @@ bool mainMenu ()
     }
     else if (option == 4)
     {
-    // cout << "4. Long term goal tracker\n";
+        return ltgMenu ();
     }
     else if (option == 5)
     {
@@ -109,17 +109,14 @@ void printNotifications ()
         cout << "No new Notifications!!\n";
         return;
     }
-    else
+    for (std::string& notification: notifications)
     {
-        for (std::string notification: notifications)
-        {
-            cout << notification << "\n";
-        }
+        cout << notification << "\n";
     }
 }
 
 void checkForMissedStuff ()
 {
-    // TODO:
     checkForMissedAT ();
+    checkForMissedMP ();
 }

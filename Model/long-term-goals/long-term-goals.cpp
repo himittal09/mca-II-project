@@ -222,6 +222,6 @@ std::ifstream& operator >> (std::ifstream& stream, LongTermGoals& obj)
 std::ofstream& operator<<(std::ofstream& stream, LongTermGoals& obj)
 {
     stream << obj.goal << "$" << obj.LongTermGoalId << " " << obj.userId << " " << obj.lastProgress << " ";
-    stream <<  obj.creationDate << " " << obj.journals_logded << " " << obj.isCompleted;
+    stream <<  obj.creationDate << " " << obj.journals_logded << " " << obj.isCompleted << "\n";
     return stream;
 }

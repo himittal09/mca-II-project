@@ -138,5 +138,13 @@ void displayAT ()
 
 void checkForMissedAT ()
 {
-    ActivityTracker::checkForAllStreakMiss();
+    try
+    {
+        ActivityTracker::checkForAllStreakMiss();
+    }
+    catch(const std::runtime_error& e)
+    {
+        std::cout << e.what() << "\n";
+    }
+    
 }

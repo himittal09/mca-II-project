@@ -204,6 +204,6 @@ std::ifstream& operator >> (std::ifstream& stream, MonthlyPlanner& obj)
 std::ofstream& operator << (std::ofstream& stream, MonthlyPlanner& obj)
 {
     stream << obj.monthlyPlan << "$" << obj.plannerId << " " << obj.userId << " ";
-    stream << obj.createdAt << " " << obj.isCompleted;
+    stream << obj.createdAt << " " << obj.isCompleted << "\n";
     return stream;
 }

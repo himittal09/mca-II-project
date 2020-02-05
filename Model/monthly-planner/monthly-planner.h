@@ -10,14 +10,14 @@
 
 class MonthlyPlanner
 {
+    static unsigned int getPlannerCount () noexcept(false);
+public:
     unsigned int plannerId;
     unsigned int userId;
     std::string monthlyPlan;
     int64_t createdAt;
     bool isCompleted;
-
-    static unsigned int getPlannerCount () noexcept(false);
-public:
+    
     MonthlyPlanner () noexcept;
     MonthlyPlanner (std::string plan) noexcept(false);
 

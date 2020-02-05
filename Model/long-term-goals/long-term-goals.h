@@ -10,6 +10,11 @@
 
 class LongTermGoals
 {
+
+    // void incrJournalsLogded () noexcept(false);
+    static unsigned int getGoalsCount () noexcept(false);
+
+public:
     unsigned int LongTermGoalId;
     unsigned int userId;
     std::string goal;
@@ -17,11 +22,7 @@ class LongTermGoals
     int64_t creationDate;
     unsigned int journals_logded;
     bool isCompleted;
-
-    // void incrJournalsLogded () noexcept(false);
-    static unsigned int getGoalsCount () noexcept(false);
-
-public:
+    
     LongTermGoals () noexcept;
     LongTermGoals (std::string) noexcept(false);
 

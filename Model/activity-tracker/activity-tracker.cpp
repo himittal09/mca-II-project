@@ -118,11 +118,9 @@ std::vector<ActivityTracker> ActivityTracker::getAllActivity () noexcept(false)
     ActivityTracker obj;
     while (!(stream >> obj).eof())
     {
-        std::cout << "Loop\n";
         if (obj.userId == auth::authProvider->getAuthenticatedUserId())
         {
             myActivities.push_back(obj);
-            std::cout << std::endl << obj.activity << std::endl;
         }
     }
     stream.close();
