@@ -17,6 +17,9 @@ to complete their goals in time.
 */
 class ActivityTracker
 {
+
+    static unsigned int getActivityCount () noexcept(false);
+public:
     // after init, push notifications for all streaks (uncompleted)
     unsigned int activityId;
     unsigned int longestStreak;
@@ -25,15 +28,12 @@ class ActivityTracker
     int64_t createdAt;
     std::string activity;
     unsigned int userId;
-
-    static unsigned int getActivityCount () noexcept(false);
-public:
     ActivityTracker () noexcept;
     ActivityTracker (std::string plan, int64_t streakDuration) noexcept(false);
 
     static void save (ActivityTracker& obj) noexcept(false);
     static std::vector<ActivityTracker> getAllActivity () noexcept(false);
-    static unsigned int checkForAllStreakMiss ();
+    static void checkForAllStreakMiss ();
 
     void checkIn ();
 

@@ -3,16 +3,6 @@
     #include "./util.h"
 #endif
 
-#ifndef __DATEH__
-    #define __DATEH__
-    #include "./date/tz.h"
-#endif
-
-#ifndef __DATETZH__
-    #define __DATETZH__
-    #include "./date/date.h"
-#endif
-
 #ifndef _CHRONO_
     #define _CHRONO_
     #include <chrono>
@@ -28,9 +18,9 @@
     #include <iostream>
 #endif
 
-#ifndef _CSTDLIB_
-    #define _CSTDLIB_
-    #include <cstdlib>
+#ifndef _SSTREAM_
+    #define _SSTREAM_
+    #include <sstream>
 #endif
 
 bool clamp (int val, int floor, int ceil)
@@ -38,23 +28,17 @@ bool clamp (int val, int floor, int ceil)
     return ((val <= ceil) && (val >= floor));
 }
 
-std::chrono::system_clock::time_point convertTime (int64_t& timePoint)
+void clearScreen (void)
 {
-    std::chrono::system_clock::time_point start(std::chrono::seconds((long)timePoint));
-    return start;
-}
-
-long getMonthfromEpoch (std::chrono::system_clock::time_point& timePoint)
-{
-    time_t tt = std::chrono::system_clock::to_time_t(timePoint);
-    tm utc_tm = *gmtime(&tt);
-    return (utc_tm.tm_year * 12) + utc_tm.tm_mon + 1;
+    std::cout << "\033[2J\033[1;1H";
 }
 
 long convertTimeToMonths (int64_t& timePoint)
 {
-    auto inter = convertTime(timePoint);
-    return getMonthfromEpoch(inter);
+    std::chrono::system_clock::time_point inter(std::chrono::seconds((long)timePoint));
+    time_t tt = std::chrono::system_clock::to_time_t(inter);
+    tm *utc_tm = localtime(&tt);
+    return (utc_tm->tm_year * 12) + utc_tm->tm_mon + 1;
 }
 
 long monthDiffFromNow (int64_t& timePoint)
@@ -87,23 +71,27 @@ bool diffBetween (int64_t& lastStreakTime, int64_t& maxAllowedTime)
     return (diffInSystem <= maxAllowedTime);
 }
 
-void clearScreen (void)
-{
-    std::cout << "\033[2J\033[1;1H";
-}
-
 std::string printFriendlyDate (int64_t& myTime)
 {
     if (myTime == 0)
     {
         return std::string("-");
     }
-    return date::format("[%R %d/%m/%y]", convertTime(myTime));
+    std::chrono::system_clock::time_point myTimeSys(std::chrono::seconds((long)myTime));
+
+    time_t tt = std::chrono::system_clock::to_time_t(myTimeSys);
+    tm *local_tm = localtime(&tt);
+
+    std::stringstream mystr;
+
+    mystr << "[" << local_tm->tm_hour << ":" << local_tm->tm_min << " " << local_tm->tm_mday;
+    mystr << "/" << local_tm->tm_mon + 1 << "/" << (local_tm->tm_year + 1900) << "]";
+
+    return mystr.str();
 }
 
 int64_t getCurrentTime ()
 {
-    // auto t = date::make_zoned(date::current_zone(), std::chrono::system_clock::now()).get_local_time();
-    // t.time_since_epoch().count();
-    return std::chrono::system_clock::now().time_since_epoch().count();
+    auto now = std::chrono::time_point_cast<std::chrono::seconds>(std::chrono::system_clock::now());
+    return now.time_since_epoch().count();
 }

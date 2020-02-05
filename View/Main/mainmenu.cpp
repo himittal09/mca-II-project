@@ -54,7 +54,7 @@ bool mainMenu ()
     }
     else if (option == 3)
     {
-    // cout << "3. go on streak\n";
+        return atMenu ();
     }
     else if (option == 4)
     {
@@ -116,4 +116,10 @@ void printNotifications ()
             cout << notification << "\n";
         }
     }
+}
+
+void checkForMissedStuff ()
+{
+    // TODO:
+    checkForMissedAT ();
 }

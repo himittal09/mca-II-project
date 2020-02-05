@@ -108,7 +108,7 @@ void displayTodos ()
         return;
     }
     cout << "S.No.\tTodo";
-    cout << setw(80);
+    cout << setw(60);
     cout << "Created At";
     cout << setw(1);
     cout << "\t\tCompleted At\n";
@@ -116,7 +116,7 @@ void displayTodos ()
     {
         cout << i+1 << "\t";
         cout << todos[i].todo;
-        cout << setw(80);
+        cout << setw(60);
         cout << printFriendlyDate(todos[i].createdAt);
         cout << setw(1);
         cout << "\t\t" << printFriendlyDate(todos[i].completedAt) << "\n";

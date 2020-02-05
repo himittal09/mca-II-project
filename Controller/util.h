@@ -14,12 +14,6 @@
 */
 bool clamp (int val, int floor, int ceil);
 
-// from seconds to epoch to timestamp
-std::chrono::system_clock::time_point convertTime (int64_t& timePoint);
-
-// from timestamp to months till epoch
-long getMonthfromEpoch (std::chrono::system_clock::time_point& timePoint);
-
 // from seconds to epoch to months till epoch
 long convertTimeToMonths (int64_t& timePoint);
 

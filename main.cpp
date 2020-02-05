@@ -23,6 +23,7 @@ std::unique_ptr<AuthModule> auth::authProvider (new AuthModule());
 int main ()
 {
     welcomeBanner ();
+    checkForMissedStuff ();
     bool exitRequest = false;
     while (!exitRequest)
     {

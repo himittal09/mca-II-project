@@ -118,16 +118,18 @@ std::vector<ActivityTracker> ActivityTracker::getAllActivity () noexcept(false)
     ActivityTracker obj;
     while (!(stream >> obj).eof())
     {
+        std::cout << "Loop\n";
         if (obj.userId == auth::authProvider->getAuthenticatedUserId())
         {
             myActivities.push_back(obj);
+            std::cout << std::endl << obj.activity << std::endl;
         }
     }
     stream.close();
     return myActivities;
 }
 
-unsigned int ActivityTracker::checkForAllStreakMiss ()
+void ActivityTracker::checkForAllStreakMiss ()
 {
     std::ifstream rstream;
     rstream.open(atFilePath, std::ios::in | std::ios::app);
@@ -196,7 +198,7 @@ void ActivityTracker::checkIn ()
         if (obj.activityId == this->activityId)
         {
             obj.longestStreak++;
-            obj.longestStreak = now;
+            obj.lastCheckIn = now;
         }
         wstream << obj;
     }
@@ -220,6 +222,6 @@ std::ifstream& operator >> (std::ifstream& stream, ActivityTracker& obj)
 std::ofstream& operator << (std::ofstream& stream, ActivityTracker& obj)
 {
     stream << obj.activity << "$" << obj.activityId << " " << obj.longestStreak << " " << obj.lastCheckIn;
-    stream << " " << obj.streakDuration << " " << obj.userId;
+    stream << " " << obj.streakDuration << " " << obj.userId << "\n";
     return stream;
 }
