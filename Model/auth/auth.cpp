@@ -8,6 +8,11 @@
     #include "./auth.h"
 #endif
 
+#ifndef __UTILSH__
+    #define __UTILSH__
+    #include "../../Controller/util.h"
+#endif
+
 #ifndef _IOSTREAM_
     #define _IOSTREAM_
     #include <iostream>
@@ -61,6 +66,11 @@ void AuthModule::loginUser (std::string email, std::string password) noexcept(fa
         throw std::runtime_error("Logout current user first!!");
     }
 
+    if (!isEmailValid(email))
+    {
+        throw std::runtime_error("Email is not valid!!");
+    }
+
     User user;
 
     try
@@ -85,6 +95,11 @@ void AuthModule::signupUser (std::string email, std::string password, std::strin
     if (isUserAuthenticated)
     {
         throw std::runtime_error("Logout current user first!!");
+    }
+
+    if (!isEmailValid(email))
+    {
+        throw std::runtime_error("Email is not valid!!");
     }
     
     int userExists = 0;

@@ -1,3 +1,5 @@
+mkdir Build
+
 g++ -std=c++14 -c ./main.cpp -o ./Build/__MAINFILE__.o
 g++ -std=c++14 -c ./Controller/util.cpp -o ./Build/__UTILS__.o
 g++ -std=c++14 -c ./Model/auth/user.cpp -o ./Build/__USER__.o
@@ -18,7 +20,7 @@ g++ -std=c++14 -c ./View/Main/todo-list-view.cpp -o ./Build/__TODOV__.o
 
 cd Build
 
-g++ *.o -o ../ProductivityTracker.exe
+g++ ./__MAINFILE__.o ./__UTILS__.o ./__USER__.o ./__AUTH__.o ./__MONTHLY__.o ./__NOTIFICATION__.o ./__TODO__.o ./__AT__.o ./__LTG__.o ./__LTJ__.o ./__AUTHV__.o ./__MENUV__.o ./__MMENUV__.o ./__ATV__.o ./__LTGV__.o ./__MONTHLYV__.o ./__TODOV__.o -o ../ProductivityTracker.exe
 
 del *.o
 cd ..

@@ -121,6 +121,7 @@ User User::findByCredentials (std::string email, std::string password) noexcept(
         {
             if (st.password == password)
             {
+                fp.close();
                 return st;
             }
             else

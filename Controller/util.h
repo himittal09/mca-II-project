@@ -35,3 +35,7 @@ void clearScreen (void);
 std::string printFriendlyDate (int64_t& myTime);
 
 int64_t getCurrentTime ();
+
+bool isEmailValid (const std::string& email);
+
+std::string getLineWithoutEcho ();

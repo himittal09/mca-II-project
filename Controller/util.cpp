@@ -23,6 +23,11 @@
     #include <sstream>
 #endif
 
+#ifndef _REGEX_
+    #define _REGEX_
+    #include <regex>
+#endif
+
 bool clamp (int val, int floor, int ceil)
 {
     return ((val <= ceil) && (val >= floor));
@@ -94,4 +99,15 @@ int64_t getCurrentTime ()
 {
     auto now = std::chrono::time_point_cast<std::chrono::seconds>(std::chrono::system_clock::now());
     return now.time_since_epoch().count();
+}
+
+bool isEmailValid (const std::string& email)
+{
+    const std::regex pattern("^\\S+@[^\\s@]+\\.[^\\s@.]+$");
+    return std::regex_match(email, pattern);
+}
+
+std::string getLineWithoutEcho ()
+{
+    
 }
