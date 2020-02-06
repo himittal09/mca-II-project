@@ -10,10 +10,10 @@ mkdir Build
 while IFS= read -r -d '' -u 9
 do
 	f=$(basename $REPLY)
-	g++ -std=c++14 -c $REPLY -o ./Build/${f%.cpp}.o
+	g++ -std=c++17 -c $REPLY -o ./Build/${f%.cpp}.o
 done 9< <( find . -type f -name '*.cpp' -print0 )
 
-g++ ./Build/*.o -o ProductivityTracker.exe
+g++ ./Build/*.o -o ProductivityTracker.out
 
 rm -r Build
 

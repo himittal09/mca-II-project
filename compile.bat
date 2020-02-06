@@ -20,7 +20,7 @@ g++ -std=c++14 -c ./View/Main/todo-list-view.cpp -o ./Build/__TODOV__.o
 
 cd Build
 
-g++ ./__MAINFILE__.o ./__UTILS__.o ./__USER__.o ./__AUTH__.o ./__MONTHLY__.o ./__NOTIFICATION__.o ./__TODO__.o ./__AT__.o ./__LTG__.o ./__LTJ__.o ./__AUTHV__.o ./__MENUV__.o ./__MMENUV__.o ./__ATV__.o ./__LTGV__.o ./__MONTHLYV__.o ./__TODOV__.o -o ../ProductivityTracker.exe
+g++ -std=c++14 ./__MAINFILE__.o ./__UTILS__.o ./__USER__.o ./__AUTH__.o ./__MONTHLY__.o ./__NOTIFICATION__.o ./__TODO__.o ./__AT__.o ./__LTG__.o ./__LTJ__.o ./__AUTHV__.o ./__MENUV__.o ./__MMENUV__.o ./__ATV__.o ./__LTGV__.o ./__MONTHLYV__.o ./__TODOV__.o -o ../ProductivityTracker.exe
 
 del *.o
 cd ..
