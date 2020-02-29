@@ -47,8 +47,7 @@ std::string atFilePath = std::string("activity-tracker.dat");
 
 unsigned int ActivityTracker::getActivityCount () noexcept(false)
 {
-    std::ifstream stream;
-    stream.open(atFilePath, std::ios::in | std::ios::app);
+    std::ifstream stream {atFilePath, std::ios::in | std::ios::app};
     if (!stream.is_open())
     {
         throw std::runtime_error("Couldn't get the activities to display!!");
@@ -60,7 +59,6 @@ unsigned int ActivityTracker::getActivityCount () noexcept(false)
     {
         fileLength++;
     }
-    stream.close();
     return fileLength;
 }
 
@@ -93,29 +91,25 @@ ActivityTracker::ActivityTracker (std::string plan, int64_t streakDuration) noex
 
 void ActivityTracker::save (ActivityTracker& obj) noexcept(false)
 {
-    std::ofstream writestream;
-    writestream.open(atFilePath, std::ios::app | std::ios::out);
+    std::ofstream writestream{atFilePath, std::ios::app | std::ios::out};
     if (!writestream.is_open())
     {
         throw std::runtime_error("Couldn't save the activity in the database");
     }
     writestream << obj;
-    writestream.close();
 }
 
 std::vector<ActivityTracker> ActivityTracker::getAllActivity () noexcept(false)
 {
-    std::vector<ActivityTracker> myActivities;
-
-    std::ifstream stream;
-    stream.open(atFilePath, std::ios::in | std::ios::app);
-
+    std::ifstream stream {atFilePath, std::ios::in | std::ios::app};
     if (!stream.is_open())
     {
         throw new std::runtime_error("Couldn't get all activities for displaying!!");
     }
 
+    std::vector<ActivityTracker> myActivities;
     ActivityTracker obj;
+
     while (!(stream >> obj).eof())
     {
         if (obj.userId == auth::authProvider->getAuthenticatedUserId())
@@ -123,21 +117,18 @@ std::vector<ActivityTracker> ActivityTracker::getAllActivity () noexcept(false)
             myActivities.push_back(obj);
         }
     }
-    stream.close();
     return myActivities;
 }
 
 void ActivityTracker::checkForAllStreakMiss ()
 {
-    std::ifstream rstream;
-    rstream.open(atFilePath, std::ios::in | std::ios::app);
+    std::ifstream rstream {atFilePath, std::ios::in | std::ios::app};
     if (!rstream.is_open())
     {
         throw std::runtime_error("Cannot reach the database to check in for a Streak!!");
     }
 
-    std::ofstream wstream;
-    wstream.open("temp.dat", std::ios::out);
+    std::ofstream wstream {"temp.dat", std::ios::out};
     if (!wstream.is_open())
     {
         throw std::runtime_error("Cannot reach the database to check in for a Streak!!");
@@ -171,15 +162,13 @@ void ActivityTracker::checkForAllStreakMiss ()
 
 void ActivityTracker::checkIn ()
 {
-    std::ifstream rstream;
-    rstream.open(atFilePath, std::ios::in | std::ios::app);
+    std::ifstream rstream {atFilePath, std::ios::in | std::ios::app};
     if (!rstream.is_open())
     {
         throw std::runtime_error("Cannot reach the database to check in for a Streak!!");
     }
 
-    std::ofstream wstream;
-    wstream.open("temp.dat", std::ios::out);
+    std::ofstream wstream {"temp.dat", std::ios::out};
     if (!wstream.is_open())
     {
         throw std::runtime_error("Cannot reach the database to check in for a Streak!!");

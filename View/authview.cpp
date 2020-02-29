@@ -53,6 +53,7 @@ int askAuthMenu ()
         cout << "2. Register\n";
         cout << "3. Exit\n";
         cout << "Choose a option: ";
+        cin.clear();
         cin >> option;
         if (clamp(option, 1, 3))
         {
@@ -87,8 +88,10 @@ void trySignup ()
 {
     std::string email, password, name;
     cout << "Email: ";
+    std::ws(cin);
     cin >> email;
     cout << "Password: ";
+    std::ws(cin);
     cin >> password;
     cout << "Your Name: ";
     std::ws(cin);

@@ -11,7 +11,7 @@ while IFS= read -r -d '' -u 9
 do
 	f=$(basename $REPLY)
 	g++ -std=c++17 -c $REPLY -o ./Build/${f%.cpp}.o
-done 9< <( find . -type f -name '*.cpp' -print0 )
+done 9< <( find . -maxdepth 5 -type f -name '*.cpp' -print0 )
 
 g++ ./Build/*.o -o ProductivityTracker.out
 

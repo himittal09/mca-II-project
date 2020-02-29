@@ -43,37 +43,33 @@ NotificationService::NotificationService (std::string notification, unsigned int
 
 void NotificationService::pushNotification (std::string notification, unsigned int userId) noexcept(false)
 {
-    std::ofstream writestream;
-    writestream.open(notificationFilePath, std::ios::app);
+    std::ofstream writestream {notificationFilePath, std::ios::app};
     if (!writestream.is_open())
     {
         throw std::runtime_error("Couldn't push the notification");
     }
+
     NotificationService obj(notification, userId);
     writestream << obj;
-    writestream.close();
 }
 
 std::vector<std::string> NotificationService::getAllNotifications (unsigned int userId) noexcept(false)
 {
-    std::vector<std::string> notifications;
-
-    std::ifstream stream;
-    stream.open(notificationFilePath, std::ios::in | std::ios::app);
+    std::ifstream stream {notificationFilePath, std::ios::in | std::ios::app};
     if (!stream.is_open())
     {
         throw new std::runtime_error("Couldn't get all notifications for displaying!!");
     }
 
-    std::ofstream writeStream;
-    writeStream.open("temp.dat", std::ios::out);
+    std::ofstream writeStream {"temp.dat", std::ios::out};
     if (!writeStream.is_open())
     {
         throw new std::runtime_error("Couldn't get all notifications for displaying!!");
     }
 
-    NotificationService obj;
-    while (!(stream >> obj).eof())
+    std::vector<std::string> notifications;
+    
+    for (NotificationService obj; !(stream >> obj).eof();)
     {
         if (obj.userId == userId)
         {

@@ -37,22 +37,18 @@ std::string todoFilePath = std::string("todo.dat");
 
 unsigned int Todo::getTodoCount () noexcept(false)
 {
-    std::ifstream wstream;
-    wstream.open(todoFilePath, std::ios::in | std::ios::app);
-
+    std::ifstream wstream {todoFilePath, std::ios::in | std::ios::app};
     if (!wstream.is_open())
     {
         throw std::runtime_error("Cannot determine the todos created count!!");
     }
-    std::string str;
-    unsigned int fileLength = 0;
-    
+
+    unsigned int fileLength = 0;    
     for (std::string str; std::getline(wstream, str); std::ws(wstream))
     {
         fileLength++;
     }
 
-    wstream.close();
     return fileLength;
 }
 
@@ -81,20 +77,18 @@ Todo::Todo (std::string todoBody) noexcept(false)
 
 std::vector<Todo> Todo::getAllTodos (bool getCompleted) noexcept(false)
 {
-    std::vector<Todo> allTodos;
-
-    std::ifstream stream;
-    stream.open(todoFilePath, std::ios::in | std::ios::app);
-
+    std::ifstream stream {todoFilePath, std::ios::in | std::ios::app};
     if (!stream.is_open())
     {
         throw new std::runtime_error("Couldn't get all todos for displaying!!");
     }
 
-    Todo obj;
-    while (!(stream >> obj).eof())
+    std::vector<Todo> allTodos;
+    unsigned int authenticatedUserId {auth::authProvider->getAuthenticatedUserId()};
+
+    for (Todo obj; !(stream >> obj).eof(); )
     {
-        if ((obj.createrId == auth::authProvider->getAuthenticatedUserId()) && (obj.completed == getCompleted))
+        if ((obj.createrId == authenticatedUserId) && (obj.completed == getCompleted))
         {
             allTodos.push_back(obj);
         }
@@ -105,14 +99,13 @@ std::vector<Todo> Todo::getAllTodos (bool getCompleted) noexcept(false)
 
 void Todo::save (Todo& obj) noexcept(false)
 {
-    std::ofstream writestream;
-    writestream.open(todoFilePath, std::ios::app | std::ios::out);
+    std::ofstream writestream {todoFilePath, std::ios::app | std::ios::out};
     if (!writestream.is_open())
     {
         throw std::runtime_error("Couldn't save the todo in the database");
     }
+
     writestream << obj;
-    writestream.close();
 }
 
 void Todo::completeTodo () noexcept(false)
@@ -125,23 +118,19 @@ void Todo::completeTodo () noexcept(false)
     this->completedAt = now;
     this->completed = true;
 
-    std::ifstream rstream;
-    rstream.open(todoFilePath, std::ios::in | std::ios::app);
+    std::ifstream rstream {todoFilePath, std::ios::in | std::ios::app};
     if (!rstream.is_open())
     {
         throw std::runtime_error("Couldn't update the todo!!");
     }
 
-    std::ofstream wstream;
-    wstream.open("temp.dat", std::ios::out);
+    std::ofstream wstream {"temp.dat", std::ios::out};
     if (!wstream.is_open())
     {
         throw std::runtime_error("Couldn't update the todo!!");
     }
 
-    Todo obj;
-
-    while (!(rstream >> obj).eof())
+    for (Todo obj; !(rstream >> obj).eof(); )
     {
         if (obj.todoId == this->todoId)
         {

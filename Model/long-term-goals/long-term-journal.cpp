@@ -51,26 +51,24 @@ LongTermGoalJournal::LongTermGoalJournal (std::string journal, unsigned int ltgI
 // keep only 10
 void LongTermGoalJournal::save (LongTermGoalJournal& obj, unsigned int journalsLodged=0) noexcept(false)
 {
-    std::ofstream wfileptr;
-    wfileptr.open(ltgjournals, std::ios::app | std::ios::out);
+    std::ofstream wfileptr {ltgjournals, std::ios::app | std::ios::out};
     if (!wfileptr.is_open())
     {
         throw std::runtime_error("Couldnot save the journal for the Goal!!");
     }
+
     wfileptr << obj;
-    wfileptr.close();
 
     // if (journalsLodged > 10)
     // {
     //     // delete a journal
-    //     std::ifstream rfileptr;
-    //     bool recordToDeleteMissed = false;
-
-    //     rfileptr.open(ltgjournals, std::ios::in | std::ios::app);
+    //     std::ifstream rfileptr {ltgjournals, std::ios::in | std::ios::app};
     //     if (!rfileptr.is_open())
     //     {
     //         throw std::runtime_error("Unable to process deletion of extra journals");
     //     }
+
+    //     bool recordToDeleteMissed = false;
 
     //     wfileptr.open("temp.dat",std::ios::out);
     //     if (!wfileptr.is_open())
@@ -105,15 +103,13 @@ void LongTermGoalJournal::save (LongTermGoalJournal& obj, unsigned int journalsL
 
 std::vector<LongTermGoalJournal> LongTermGoalJournal::getJournals (unsigned int goalId) noexcept(false)
 {
-    std::vector<LongTermGoalJournal> journals;
-    
-    std::ifstream fileptr;
-    fileptr.open(ltgjournals, std::ios::in | std::ios::app);
+    std::ifstream fileptr {ltgjournals, std::ios::in | std::ios::app};
     if (!fileptr.is_open())
     {
         throw std::runtime_error("Couldn't get the journals to display!!");
     }
 
+    std::vector<LongTermGoalJournal> journals;
     LongTermGoalJournal obj;
 
     while (!(fileptr >> obj).eof())
@@ -123,8 +119,6 @@ std::vector<LongTermGoalJournal> LongTermGoalJournal::getJournals (unsigned int 
             journals.push_back(obj);
         }
     }
-
-    fileptr.close();
     return journals;
 }
 

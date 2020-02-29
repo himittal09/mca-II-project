@@ -42,20 +42,17 @@ std::string mpFilePath = std::string("monthlyplanner.dat");
 
 unsigned int MonthlyPlanner::getPlannerCount () noexcept(false)
 {
-    std::ifstream stream;
-    stream.open(mpFilePath, std::ios::in | std::ios::app);
+    std::ifstream stream {mpFilePath, std::ios::in | std::ios::app};
     if (!stream.is_open())
     {
         throw std::runtime_error("Couldn't get the monthly plans to display!!");
     }
     
     unsigned int fileLength = 0;
-
     for (std::string str; std::getline(stream, str); std::ws(stream))
     {
         fileLength++;
     }
-    stream.close();
     return fileLength;
 }
 
@@ -83,14 +80,12 @@ MonthlyPlanner::MonthlyPlanner (std::string monthlyPlan) noexcept(false)
 
 void MonthlyPlanner::save(MonthlyPlanner& obj) noexcept(false)
 {
-    std::ofstream writestream;
-    writestream.open(mpFilePath, std::ios::app | std::ios::out);
+    std::ofstream writestream {mpFilePath, std::ios::app | std::ios::out};
     if (!writestream.is_open())
     {
         throw std::runtime_error("Couldn't save the plan in the database");
     }
     writestream << obj;
-    writestream.close();
 }
 
 void MonthlyPlanner::completePlan () noexcept(false)
@@ -101,23 +96,19 @@ void MonthlyPlanner::completePlan () noexcept(false)
     }
     this->isCompleted = true;
 
-    std::ifstream rstream;
-    rstream.open(mpFilePath, std::ios::in | std::ios::app);
+    std::ifstream rstream {mpFilePath, std::ios::in | std::ios::app};
     if (!rstream.is_open())
     {
         throw std::runtime_error("Cannot reach the database to complete the Plan now!!");
     }
 
-    std::ofstream wstream;
-    wstream.open("temp.dat", std::ios::out);
+    std::ofstream wstream {"temp.dat", std::ios::out};
     if (!wstream.is_open())
     {
         throw std::runtime_error("Cannot reach the database to complete the Plan now!!");
     }
 
-    MonthlyPlanner obj;
-
-    while (!(rstream >> obj).eof())
+    for (MonthlyPlanner obj; !(rstream >> obj).eof(); )
     {
         if (obj.plannerId == this->plannerId)
         {
@@ -136,41 +127,36 @@ void MonthlyPlanner::completePlan () noexcept(false)
 
 std::vector<MonthlyPlanner> MonthlyPlanner::getallPlans (bool getCompleted) noexcept(false)
 {
-    std::vector<MonthlyPlanner> myPlans;
-
-    std::ifstream stream;
-    stream.open(mpFilePath, std::ios::in | std::ios::app);
-
+    std::ifstream stream {mpFilePath, std::ios::in | std::ios::app};
     if (!stream.is_open())
     {
         throw new std::runtime_error("Couldn't get all plans for displaying!!");
     }
 
-    MonthlyPlanner obj;
-    while (!(stream >> obj).eof())
+    std::vector<MonthlyPlanner> myPlans;
+    unsigned int authenticatedUserId {auth::authProvider->getAuthenticatedUserId()};
+
+    for (MonthlyPlanner obj; !(stream >> obj).eof(); )
     {
-        if ((obj.userId == auth::authProvider->getAuthenticatedUserId()) && (obj.isCompleted == getCompleted))
+        if ((obj.userId == authenticatedUserId) && (obj.isCompleted == getCompleted))
         {
             myPlans.push_back(obj);
         }
     }
-    stream.close();
     return myPlans;
 }
 
 void MonthlyPlanner::checkAnRemoveExpiredPlan () noexcept(false)
 {
-    std::ifstream rstream;
-    rstream.open(mpFilePath, std::ios::in | std::ios::app);
-
+    std::ifstream rstream {mpFilePath, std::ios::in | std::ios::app};
     if (!rstream.is_open())
     {
         throw std::runtime_error("Cannot access monthly plans at the movement");
     }
 
-    MonthlyPlanner obj;
-    bool toRemovePlans = false;
-    while (!(rstream >> obj).eof())
+    bool toRemovePlans {false};
+    
+    for (MonthlyPlanner obj; !(rstream >> obj).eof(); )
     {
         // to execute block only once
         if (!toRemovePlans && monthDiffFromNow(obj.createdAt) != 0)
@@ -183,13 +169,10 @@ void MonthlyPlanner::checkAnRemoveExpiredPlan () noexcept(false)
         }
     }
 
-    rstream.close();
     if (toRemovePlans)
     {
         // open file in truncate mode and delete all content
-        std::ofstream ofs;
-        ofs.open(mpFilePath, std::ios::trunc | std::ios::out);
-        ofs.close();
+        std::ofstream ofs {mpFilePath, std::ios::trunc | std::ios::out};
     }
 }
 

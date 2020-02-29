@@ -3,7 +3,6 @@
 **************************************************************
 
 ./Controller/auth-provider.h                        __APH__
-./Controller/date.h                                 __DATEH__
 ./Controller/filesystem.hpp                         _FILESYSTEM_
 ./Controller/util.h                                 __UTILSH__
 ./Controller/util.cpp                               __UTILS__
