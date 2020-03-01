@@ -71,17 +71,8 @@ void AuthModule::loginUser (std::string email, std::string password) noexcept(fa
         throw std::runtime_error("Email is not valid!!");
     }
 
-    User user;
+    User user {User::findByCredentials(email, password)};
 
-    try
-    {
-        user = User::findByCredentials(email, password);
-    }
-    catch(const std::runtime_error& e)
-    {
-        throw e;
-    }
-    
     if (user.userId == 0)
     {
         throw std::runtime_error("No user found with current credentials!!");
@@ -102,17 +93,8 @@ void AuthModule::signupUser (std::string email, std::string password, std::strin
         throw std::runtime_error("Email is not valid!!");
     }
     
-    int userExists = 0;
+    int userExists {User::findOne(email)};
 
-    try
-    {
-        userExists = User::findOne(email);
-    }
-    catch(const std::runtime_error& e)
-    {
-        throw e;
-    }
-    
     if (userExists)
     {
         throw std::runtime_error("User already exists!!");
@@ -120,14 +102,7 @@ void AuthModule::signupUser (std::string email, std::string password, std::strin
     
     User user = User(email, password, name);
     
-    try
-    {
-        User::save(user);
-    }
-    catch(const std::runtime_error& e)
-    {
-        throw e;
-    }
+    User::save(user);
     
     authenticateUser(user);
 }

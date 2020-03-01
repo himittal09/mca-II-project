@@ -110,7 +110,6 @@ void displayMP ()
     cout << "S.No.\tPlan";
     cout << setw(60);
     cout << "Created At";
-    cout << setw(1);
     cout << "\n";
     for (int i=0; i<plans.size(); i++)
     {
@@ -118,7 +117,6 @@ void displayMP ()
         cout << plans[i].monthlyPlan;
         cout << setw(60);
         cout << printFriendlyDate(plans[i].createdAt);
-        cout << setw(1);
         cout << "\n";
 
     }

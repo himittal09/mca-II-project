@@ -88,15 +88,7 @@ LongTermGoals::LongTermGoals (std::string goal) noexcept(false)
     this->creationDate = getCurrentTime();
     this->lastProgress = 0;
     this->userId = auth::authProvider->getAuthenticatedUserId();
-
-    try
-    {
-        this->LongTermGoalId = LongTermGoals::getGoalsCount()+1;
-    }
-    catch(const std::runtime_error& e)
-    {
-        throw e;
-    }
+    this->LongTermGoalId = LongTermGoals::getGoalsCount() + 1;
 }
 
 void LongTermGoals::save (LongTermGoals& obj) noexcept(false)
@@ -134,17 +126,10 @@ std::vector<LongTermGoals> LongTermGoals::getAllGoals (bool getCompleted) noexce
 void LongTermGoals::lodgeJournal (std::string jour) noexcept(false)
 {
     LongTermGoalJournal journal(jour, this->LongTermGoalId);
-    try
-    {
-        // this->incrJournalsLogded();
-        // TODO: increment journal_lodged counter on file everytime a new journal is lodged
-        LongTermGoalJournal::save(journal, 10);
-        // TODO: update last progress on longtermgoal every time a new journal for a goal is posted
-    }
-    catch(const std::runtime_error& e)
-    {
-        throw e;
-    }
+    // this->incrJournalsLogded();
+    // TODO: increment journal_lodged counter on file everytime a new journal is lodged
+    LongTermGoalJournal::save(journal, 10);
+    // TODO: update last progress on longtermgoal every time a new journal for a goal is posted
 }
 
 void LongTermGoals::markGoalComplete () noexcept(false)
@@ -188,14 +173,7 @@ void LongTermGoals::markGoalComplete () noexcept(false)
 
 std::vector<LongTermGoalJournal> LongTermGoals::getMyJournals () noexcept(false)
 {
-    try
-    {
-        return LongTermGoalJournal::getJournals(this->LongTermGoalId);
-    }
-    catch(const std::runtime_error& e)
-    {
-        throw e;
-    }
+    return LongTermGoalJournal::getJournals(this->LongTermGoalId);
 }
 
 std::ifstream& operator >> (std::ifstream& stream, LongTermGoals& obj)

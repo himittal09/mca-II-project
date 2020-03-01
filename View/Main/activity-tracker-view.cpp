@@ -109,14 +109,12 @@ void displayAT ()
     cout << "S.No.\tActivity";
     cout << setw(60);
     cout << "Longest Streak";
-    cout << setw(1);
     cout << "\t\tLast CheckIn At\t\tStreak Duration\n";
     for (int i=0; i<activities.size(); i++)
     {
         cout << i+1 << "\t" << activities[i].activity;
         cout << setw(60);
         cout << activities[i].longestStreak;
-        cout << setw(1);
         cout << "\t\t" << printFriendlyDate(activities[i].lastCheckIn) << "\t\t";
         cout << activities[i].streakDuration / 60 << "\n";
     }

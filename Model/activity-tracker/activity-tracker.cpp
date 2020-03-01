@@ -72,15 +72,7 @@ ActivityTracker::ActivityTracker () noexcept
 // inout streak duration in minutes in this constructor
 ActivityTracker::ActivityTracker (std::string plan, int64_t streakDuration) noexcept(false)
 {
-    try
-    {
-        this->activityId = ActivityTracker::getActivityCount()+1;
-    }
-    catch(const std::runtime_error& e)
-    {
-        throw e;
-    }
-    
+    this->activityId = ActivityTracker::getActivityCount()+1;
     this->longestStreak = 0;
     this->userId = auth::authProvider->getAuthenticatedUserId();
     this->activity = plan;

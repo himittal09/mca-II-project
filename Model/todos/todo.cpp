@@ -64,15 +64,7 @@ Todo::Todo (std::string todoBody) noexcept(false)
     this->createdAt = getCurrentTime();
     this->completedAt = 0;
     this->createrId = auth::authProvider->getAuthenticatedUserId();
-
-    try
-    {
-        this->todoId = Todo::getTodoCount() + 1;
-    }
-    catch(const std::runtime_error& e)
-    {
-        throw e;
-    }
+    this->todoId = Todo::getTodoCount() + 1;
 }
 
 std::vector<Todo> Todo::getAllTodos (bool getCompleted) noexcept(false)

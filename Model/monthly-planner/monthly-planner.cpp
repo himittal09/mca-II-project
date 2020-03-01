@@ -67,15 +67,7 @@ MonthlyPlanner::MonthlyPlanner (std::string monthlyPlan) noexcept(false)
     this->isCompleted = false;
     this->userId = auth::authProvider->getAuthenticatedUserId();
     this->createdAt = getCurrentTime();
-    
-    try
-    {
-        this->plannerId = MonthlyPlanner::getPlannerCount() + 1;
-    }
-    catch(const std::runtime_error& e)
-    {
-        throw e;
-    }
+    this->plannerId = MonthlyPlanner::getPlannerCount() + 1;
 }
 
 void MonthlyPlanner::save(MonthlyPlanner& obj) noexcept(false)
@@ -130,7 +122,7 @@ std::vector<MonthlyPlanner> MonthlyPlanner::getallPlans (bool getCompleted) noex
     std::ifstream stream {mpFilePath, std::ios::in | std::ios::app};
     if (!stream.is_open())
     {
-        throw new std::runtime_error("Couldn't get all plans for displaying!!");
+        throw std::runtime_error("Couldn't get all plans for displaying!!");
     }
 
     std::vector<MonthlyPlanner> myPlans;

@@ -58,13 +58,13 @@ std::vector<std::string> NotificationService::getAllNotifications (unsigned int 
     std::ifstream stream {notificationFilePath, std::ios::in | std::ios::app};
     if (!stream.is_open())
     {
-        throw new std::runtime_error("Couldn't get all notifications for displaying!!");
+        throw std::runtime_error("Couldn't get all notifications for displaying!!");
     }
 
     std::ofstream writeStream {"temp.dat", std::ios::out};
     if (!writeStream.is_open())
     {
-        throw new std::runtime_error("Couldn't get all notifications for displaying!!");
+        throw std::runtime_error("Couldn't get all notifications for displaying!!");
     }
 
     std::vector<std::string> notifications;

@@ -115,7 +115,6 @@ void displayLTG ()
     cout << "S.No.\tGoal";
     cout << setw(60);
     cout << "Created At";
-    cout << setw(1);
     cout << "\n";
     for (int i=0; i<goals.size(); i++)
     {
@@ -123,7 +122,6 @@ void displayLTG ()
         cout << goals[i].goal;
         cout << setw(60);
         cout << printFriendlyDate(goals[i].creationDate);
-        cout << setw(1);
         cout << "\n";
     }
     cout << "\nEnter goal number to choose actions for it (0 to ignore): ";
@@ -170,48 +168,39 @@ int askLTGSubMenu (bool completed)
 
 void execLTGSubMenu (LongTermGoals& obj, int order)
 {
-    try
+    if (order == 1)
     {
-        if (order == 1)
+        std::vector<LongTermGoalJournal> journals{obj.getMyJournals()};
+        if (journals.size() == 0)
         {
-            std::vector<LongTermGoalJournal> journals{obj.getMyJournals()};
-            if (journals.size() == 0)
-            {
-                cout << "No journals to display...\n";
-                return;
-            }
+            cout << "No journals to display...\n";
+            return;
+        }
 
-            cout << "Journal";
+        cout << "Journal";
+        cout << setw(80);
+        cout << "Lodge Date";
+        cout << "\n";
+
+        for (LongTermGoalJournal& jour: journals)
+        {
+            cout << jour.journal;
             cout << setw(80);
-            cout << "Lodge Date";
-            cout << setw(1);
+            cout << printFriendlyDate(jour.lodgeDate);
             cout << "\n";
-
-            for (LongTermGoalJournal& jour: journals)
-            {
-                cout << jour.journal;
-                cout << setw(80);
-                cout << printFriendlyDate(jour.lodgeDate);
-                cout << setw(1);
-                cout << "\n";
-            }
-        }
-        else if (order == 2)
-        {
-            string str;
-            cout << "Enter journal: ";
-            ws(cin);
-            getline(cin, str);
-            obj.lodgeJournal(str);
-            cout << "\nJournal Logded!!\n";
-        }
-        else
-        {
-            obj.markGoalComplete();
         }
     }
-    catch(const std::runtime_error& e)
+    else if (order == 2)
     {
-        throw e;
+        string str;
+        cout << "Enter journal: ";
+        ws(cin);
+        getline(cin, str);
+        obj.lodgeJournal(str);
+        cout << "\nJournal Logded!!\n";
+    }
+    else
+    {
+        obj.markGoalComplete();
     }
 }

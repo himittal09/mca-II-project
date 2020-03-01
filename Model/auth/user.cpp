@@ -42,14 +42,7 @@ User::User (std::string email, std::string password, std::string name) noexcept(
     this->email = email;
     this->password = password;
     this->name = name;
-    try
-    {
-        this->userId = User::getUsersCount()+1;
-    }
-    catch(const std::runtime_error& e)
-    {
-        throw e;
-    }
+    this->userId = User::getUsersCount() + 1;
 }
 
 User::User () noexcept
