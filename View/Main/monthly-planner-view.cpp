@@ -85,7 +85,7 @@ void addMP ()
     try
     {
         MonthlyPlanner newPlan = MonthlyPlanner(planner);
-        MonthlyPlanner::save(newPlan);
+        newPlan.save();
     }
     catch(const std::runtime_error& e)
     {

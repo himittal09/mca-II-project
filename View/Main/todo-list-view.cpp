@@ -85,7 +85,7 @@ void addTodo ()
     try
     {
         Todo newTodo = Todo(todo);
-        Todo::save(newTodo);
+        newTodo.save();
     }
     catch(const std::runtime_error& e)
     {

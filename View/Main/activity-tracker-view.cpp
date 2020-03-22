@@ -88,7 +88,7 @@ void addAT ()
     try
     {
         ActivityTracker newActivity = ActivityTracker(activityT, streakDuration);
-        ActivityTracker::save(newActivity);
+        newActivity.save();
     }
     catch(const std::runtime_error& e)
     {

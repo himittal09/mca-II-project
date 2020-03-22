@@ -102,7 +102,7 @@ void AuthModule::signupUser (std::string email, std::string password, std::strin
     
     User user = User(email, password, name);
     
-    User::save(user);
+    user.save();
     
     authenticateUser(user);
 }

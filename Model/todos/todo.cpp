@@ -89,7 +89,7 @@ std::vector<Todo> Todo::getAllTodos (bool getCompleted) noexcept(false)
     return allTodos;
 }
 
-void Todo::save (Todo& obj) noexcept(false)
+void Todo::save () noexcept(false)
 {
     std::ofstream writestream {todoFilePath, std::ios::app | std::ios::out};
     if (!writestream.is_open())
@@ -97,7 +97,7 @@ void Todo::save (Todo& obj) noexcept(false)
         throw std::runtime_error("Couldn't save the todo in the database");
     }
 
-    writestream << obj;
+    writestream << *this;
 }
 
 void Todo::completeTodo () noexcept(false)

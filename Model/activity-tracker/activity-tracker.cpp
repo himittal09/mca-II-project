@@ -81,14 +81,14 @@ ActivityTracker::ActivityTracker (std::string plan, int64_t streakDuration) noex
     this->lastCheckIn = 0;
 }
 
-void ActivityTracker::save (ActivityTracker& obj) noexcept(false)
+void ActivityTracker::save () noexcept(false)
 {
     std::ofstream writestream{atFilePath, std::ios::app | std::ios::out};
     if (!writestream.is_open())
     {
         throw std::runtime_error("Couldn't save the activity in the database");
     }
-    writestream << obj;
+    writestream << *this;
 }
 
 std::vector<ActivityTracker> ActivityTracker::getAllActivity () noexcept(false)
@@ -100,9 +100,8 @@ std::vector<ActivityTracker> ActivityTracker::getAllActivity () noexcept(false)
     }
 
     std::vector<ActivityTracker> myActivities;
-    ActivityTracker obj;
-
-    while (!(stream >> obj).eof())
+    
+    for (ActivityTracker obj; !(stream >> obj).eof(); )
     {
         if (obj.userId == auth::authProvider->getAuthenticatedUserId())
         {
@@ -126,9 +125,7 @@ void ActivityTracker::checkForAllStreakMiss ()
         throw std::runtime_error("Cannot reach the database to check in for a Streak!!");
     }
 
-    ActivityTracker obj;
-
-    while (!(rstream >> obj).eof())
+    for (ActivityTracker obj; !(rstream >> obj).eof(); )
     {
         if (diffBetween(obj.lastCheckIn, obj.streakDuration))
         {
@@ -166,13 +163,12 @@ void ActivityTracker::checkIn ()
         throw std::runtime_error("Cannot reach the database to check in for a Streak!!");
     }
 
-    ActivityTracker obj;
     int64_t now = getCurrentTime();
 
     this->longestStreak++;
     this->lastCheckIn = now;
 
-    while (!(rstream >> obj).eof())
+    for (ActivityTracker obj; !(rstream >> obj).eof(); )
     {
         if (obj.activityId == this->activityId)
         {

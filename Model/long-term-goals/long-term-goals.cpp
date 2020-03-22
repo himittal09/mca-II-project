@@ -91,7 +91,7 @@ LongTermGoals::LongTermGoals (std::string goal) noexcept(false)
     this->LongTermGoalId = LongTermGoals::getGoalsCount() + 1;
 }
 
-void LongTermGoals::save (LongTermGoals& obj) noexcept(false)
+void LongTermGoals::save () noexcept(false)
 {
     std::ofstream writestream {ltgFilePath, std::ios::app | std::ios::out};
     if (!writestream.is_open())
@@ -99,7 +99,7 @@ void LongTermGoals::save (LongTermGoals& obj) noexcept(false)
         throw std::runtime_error("Couldn't save the goal in the database");
     }
 
-    writestream << obj;
+    writestream << *this;
 }
 
 std::vector<LongTermGoals> LongTermGoals::getAllGoals (bool getCompleted) noexcept(false)
@@ -111,9 +111,9 @@ std::vector<LongTermGoals> LongTermGoals::getAllGoals (bool getCompleted) noexce
     }
 
     std::vector<LongTermGoals> myltg;
-    LongTermGoals obj;
     unsigned int authenticatedUserId {auth::authProvider->getAuthenticatedUserId()};
-    while (!(stream >> obj).eof())
+
+    for (LongTermGoals obj; !(stream >> obj).eof(); )
     {
         if ((obj.userId == authenticatedUserId) && (obj.isCompleted == getCompleted))
         {
@@ -128,7 +128,7 @@ void LongTermGoals::lodgeJournal (std::string jour) noexcept(false)
     LongTermGoalJournal journal(jour, this->LongTermGoalId);
     // this->incrJournalsLogded();
     // TODO: increment journal_lodged counter on file everytime a new journal is lodged
-    LongTermGoalJournal::save(journal, 10);
+    journal.save(10);
     // TODO: update last progress on longtermgoal every time a new journal for a goal is posted
 }
 
@@ -153,9 +153,7 @@ void LongTermGoals::markGoalComplete () noexcept(false)
         throw std::runtime_error("Couldn't update the todo!!");
     }
 
-    LongTermGoals obj;
-
-    while (!(rstream >> obj).eof())
+    for (LongTermGoals obj; !(rstream >> obj).eof(); )
     {
         if (obj.LongTermGoalId == this->LongTermGoalId)
         {

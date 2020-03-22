@@ -31,7 +31,7 @@ public:
     ActivityTracker () noexcept;
     ActivityTracker (std::string plan, int64_t streakDuration) noexcept(false);
 
-    static void save (ActivityTracker& obj) noexcept(false);
+    void save () noexcept(false);
     static std::vector<ActivityTracker> getAllActivity () noexcept(false);
     static void checkForAllStreakMiss ();
 

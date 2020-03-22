@@ -26,7 +26,7 @@ public:
      * Creates a user in the database, doesnot checks if already retundant email
      * @internal, donot use directly
      */
-    static void save (User user) noexcept(false);
+    void save () noexcept(false);
     static User findByCredentials (std::string email, std::string password) noexcept(false);
 
     friend std::ifstream& operator >> (std::ifstream&, User& obj);

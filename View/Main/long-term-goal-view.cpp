@@ -90,7 +90,7 @@ void addLTG ()
     try
     {
         LongTermGoals newTodo = LongTermGoals(goal);
-        LongTermGoals::save(newTodo);
+        newTodo.save();
     }
     catch(const std::runtime_error& e)
     {

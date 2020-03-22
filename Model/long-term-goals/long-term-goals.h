@@ -26,7 +26,7 @@ public:
     LongTermGoals () noexcept;
     LongTermGoals (std::string) noexcept(false);
 
-    static void save (LongTermGoals& obj) noexcept(false);
+    void save () noexcept(false);
     static std::vector<LongTermGoals> getAllGoals (bool getCompleted) noexcept(false);
     void lodgeJournal (std::string journalToLodge) noexcept(false);
     void markGoalComplete () noexcept(false);

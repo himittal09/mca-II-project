@@ -23,7 +23,7 @@ public:
 
     void completePlan () noexcept(false);
     
-    static void save (MonthlyPlanner& obj) noexcept(false);
+    void save () noexcept(false);
     static std::vector<MonthlyPlanner> getallPlans (bool getCompleted) noexcept(false);
     static void checkAnRemoveExpiredPlan () noexcept(false);
 

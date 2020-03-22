@@ -68,14 +68,14 @@ unsigned int User::findOne (std::string email) noexcept(false)
     return 0;
 }
 
-void User::save (User user) noexcept(false)
+void User::save () noexcept(false)
 {
     std::ofstream fp {userFilename, std::ios::app | std::ios::out};
     if (!fp.is_open())
     {
         throw std::runtime_error("Unable to save user data, cannot perform operation now!!");
     }
-    fp << user;
+    fp << *this;
 }
 
 User User::findByCredentials (std::string email, std::string password) noexcept(false)

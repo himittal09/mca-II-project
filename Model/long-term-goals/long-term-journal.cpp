@@ -49,7 +49,7 @@ LongTermGoalJournal::LongTermGoalJournal (std::string journal, unsigned int ltgI
 
 // TODO: take input number of journals logded, and delete excess journals
 // keep only 10
-void LongTermGoalJournal::save (LongTermGoalJournal& obj, unsigned int journalsLodged=0) noexcept(false)
+void LongTermGoalJournal::save (unsigned int journalsLodged=0) noexcept(false)
 {
     std::ofstream wfileptr {ltgjournals, std::ios::app | std::ios::out};
     if (!wfileptr.is_open())
@@ -57,7 +57,7 @@ void LongTermGoalJournal::save (LongTermGoalJournal& obj, unsigned int journalsL
         throw std::runtime_error("Couldnot save the journal for the Goal!!");
     }
 
-    wfileptr << obj;
+    wfileptr << *this;
 
     // if (journalsLodged > 10)
     // {
@@ -110,9 +110,8 @@ std::vector<LongTermGoalJournal> LongTermGoalJournal::getJournals (unsigned int 
     }
 
     std::vector<LongTermGoalJournal> journals;
-    LongTermGoalJournal obj;
 
-    while (!(fileptr >> obj).eof())
+    for (LongTermGoalJournal obj; !(fileptr >> obj).eof(); )
     {        
         if (obj.longTermGoalId == goalId)
         {

@@ -70,14 +70,14 @@ MonthlyPlanner::MonthlyPlanner (std::string monthlyPlan) noexcept(false)
     this->plannerId = MonthlyPlanner::getPlannerCount() + 1;
 }
 
-void MonthlyPlanner::save(MonthlyPlanner& obj) noexcept(false)
+void MonthlyPlanner::save() noexcept(false)
 {
     std::ofstream writestream {mpFilePath, std::ios::app | std::ios::out};
     if (!writestream.is_open())
     {
         throw std::runtime_error("Couldn't save the plan in the database");
     }
-    writestream << obj;
+    writestream << *this;
 }
 
 void MonthlyPlanner::completePlan () noexcept(false)
