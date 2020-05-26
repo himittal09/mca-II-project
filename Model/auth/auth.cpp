@@ -43,11 +43,8 @@ void AuthModule::unauthenticateUser () noexcept
 }
 
 AuthModule::AuthModule () noexcept
-{
-    isUserAuthenticated = false;
-    authenticatedUserId = 0;
-    authenticatedUsername = std::string("User");
-}
+:isUserAuthenticated {false}, authenticatedUserId {0}, authenticatedUsername {std::string("User")}
+{ }
 
 void AuthModule::logoutUser () noexcept(false)
 {
@@ -73,7 +70,7 @@ void AuthModule::loginUser (std::string email, std::string password) noexcept(fa
 
     User user {User::findByCredentials(email, password)};
 
-    if (user.userId == 0)
+    if (user)
     {
         throw std::runtime_error("No user found with current credentials!!");
     }
@@ -93,7 +90,7 @@ void AuthModule::signupUser (std::string email, std::string password, std::strin
         throw std::runtime_error("Email is not valid!!");
     }
     
-    int userExists {User::findOne(email)};
+    User userExists {User::findOne(email)};
 
     if (userExists)
     {

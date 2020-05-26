@@ -75,21 +75,12 @@ unsigned int LongTermGoals::getGoalsCount () noexcept(false)
     return fileLength;
 }
 
-LongTermGoals::LongTermGoals () noexcept
-{
-    this->LongTermGoalId = 0;
-}
+LongTermGoals::LongTermGoals () noexcept :LongTermGoalId {0} { }
 
 LongTermGoals::LongTermGoals (std::string goal) noexcept(false)
-{
-    this->isCompleted = false;
-    this->journals_logded = 0;
-    this->goal = goal;
-    this->creationDate = getCurrentTime();
-    this->lastProgress = 0;
-    this->userId = auth::authProvider->getAuthenticatedUserId();
-    this->LongTermGoalId = LongTermGoals::getGoalsCount() + 1;
-}
+:isCompleted {false}, journals_logded {0}, goal {goal}, creationDate {getCurrentTime()},
+lastProgress {0}, userId {auth::authProvider->getAuthenticatedUserId()}, LongTermGoalId {LongTermGoals::getGoalsCount() + 1}
+{ }
 
 void LongTermGoals::save () noexcept(false)
 {

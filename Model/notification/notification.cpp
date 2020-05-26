@@ -30,16 +30,11 @@
 
 std::string notificationFilePath = std::string("notifications.dat");
 
-NotificationService::NotificationService ()
-{
-    this->userId = 0;
-}
+NotificationService::NotificationService () noexcept : userId {0} { }
 
-NotificationService::NotificationService (std::string notification, unsigned int userId)
-{
-    this->notification = notification;
-    this->userId = userId;
-}
+NotificationService::NotificationService (std::string notification, unsigned int userId) noexcept
+:notification{notification}, userId {userId}
+{ }
 
 void NotificationService::pushNotification (std::string notification, unsigned int userId) noexcept(false)
 {

@@ -103,7 +103,7 @@ int askmainMenu ()
 
 void printNotifications ()
 {
-    std::vector<std::string> notifications = NotificationService::getAllNotifications(auth::authProvider->getAuthenticatedUserId());
+    std::vector<std::string> notifications {NotificationService::getAllNotifications(auth::authProvider->getAuthenticatedUserId())};
     if (!notifications.size())
     {
         cout << "No new Notifications!!\n";

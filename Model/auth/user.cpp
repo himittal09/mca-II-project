@@ -38,19 +38,12 @@ unsigned int User::getUsersCount () noexcept(false)
 }
 
 User::User (std::string email, std::string password, std::string name) noexcept(false)
-{
-    this->email = email;
-    this->password = password;
-    this->name = name;
-    this->userId = User::getUsersCount() + 1;
-}
+:email {email}, password{password}, name {name}, userId {User::getUsersCount() + 1}
+{ }
 
-User::User () noexcept
-{
-    this->userId = 0;
-}
+User::User () noexcept : userId {0} { }
 
-unsigned int User::findOne (std::string email) noexcept(false)
+User User::findOne (std::string email) noexcept(false)
 {
     std::ifstream fp {userFilename, std::ios::in | std::ios::app};
     if (!fp.is_open())
@@ -62,10 +55,10 @@ unsigned int User::findOne (std::string email) noexcept(false)
     {
         if (st.email == email)
         {
-            return st.userId;
+            return st;
         }
     }
-    return 0;
+    return User();
 }
 
 void User::save () noexcept(false)
@@ -103,6 +96,11 @@ User User::findByCredentials (std::string email, std::string password) noexcept(
 
     // return dummy object in case of no match
     return User();
+}
+
+User::operator bool () const noexcept
+{
+    return (this->userId != 0);
 }
 
 std::ifstream& operator >> (std::ifstream& stream, User& obj)

@@ -52,20 +52,12 @@ unsigned int Todo::getTodoCount () noexcept(false)
     return fileLength;
 }
 
-Todo::Todo () noexcept
-{
-    this->todoId = 0;
-}
+Todo::Todo () noexcept : todoId {0} { }
 
 Todo::Todo (std::string todoBody) noexcept(false)
-{
-    this->todo = todoBody;
-    this->completed = false;
-    this->createdAt = getCurrentTime();
-    this->completedAt = 0;
-    this->createrId = auth::authProvider->getAuthenticatedUserId();
-    this->todoId = Todo::getTodoCount() + 1;
-}
+:todo {todoBody}, todoId {Todo::getTodoCount() + 1}, createrId {auth::authProvider->getAuthenticatedUserId()},
+completed {false}, createdAt {getCurrentTime()}, completedAt {0}
+{ }
 
 std::vector<Todo> Todo::getAllTodos (bool getCompleted) noexcept(false)
 {

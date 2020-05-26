@@ -35,17 +35,11 @@
 
 std::string ltgjournals = std::string("ltgjournal.dat");
 
-LongTermGoalJournal::LongTermGoalJournal () noexcept
-{
-    this->longTermGoalId = 0;
-}
+LongTermGoalJournal::LongTermGoalJournal () noexcept :longTermGoalId {0} { }
 
 LongTermGoalJournal::LongTermGoalJournal (std::string journal, unsigned int ltgId) noexcept
-{
-    this->lodgeDate = getCurrentTime();
-    this->journal = journal;
-    this->longTermGoalId = ltgId;
-}
+:lodgeDate {getCurrentTime()}, journal {journal}, longTermGoalId {ltgId}
+{ }
 
 // TODO: take input number of journals logded, and delete excess journals
 // keep only 10

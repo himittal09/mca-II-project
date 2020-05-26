@@ -56,19 +56,12 @@ unsigned int MonthlyPlanner::getPlannerCount () noexcept(false)
     return fileLength;
 }
 
-MonthlyPlanner::MonthlyPlanner () noexcept
-{
-    this->plannerId = 0;
-}
+MonthlyPlanner::MonthlyPlanner () noexcept :plannerId {0} { }
 
 MonthlyPlanner::MonthlyPlanner (std::string monthlyPlan) noexcept(false)
-{
-    this->monthlyPlan = monthlyPlan;
-    this->isCompleted = false;
-    this->userId = auth::authProvider->getAuthenticatedUserId();
-    this->createdAt = getCurrentTime();
-    this->plannerId = MonthlyPlanner::getPlannerCount() + 1;
-}
+:monthlyPlan {monthlyPlan}, userId {auth::authProvider->getAuthenticatedUserId()}, isCompleted {false},
+createdAt {getCurrentTime()}, plannerId {MonthlyPlanner::getPlannerCount() + 1}
+{ }
 
 void MonthlyPlanner::save() noexcept(false)
 {

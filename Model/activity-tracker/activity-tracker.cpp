@@ -63,23 +63,13 @@ unsigned int ActivityTracker::getActivityCount () noexcept(false)
 }
 
 ActivityTracker::ActivityTracker () noexcept
-{
-    this->activityId = 0;
-    this->longestStreak = 0;
-    this->userId = 0;
-}
+:activityId {0}, longestStreak {0}, userId {0}
+{ }
 
-// inout streak duration in minutes in this constructor
-ActivityTracker::ActivityTracker (std::string plan, int64_t streakDuration) noexcept(false)
-{
-    this->activityId = ActivityTracker::getActivityCount()+1;
-    this->longestStreak = 0;
-    this->userId = auth::authProvider->getAuthenticatedUserId();
-    this->activity = plan;
-    this->streakDuration = streakDuration * 60;
-    this->createdAt = getCurrentTime();
-    this->lastCheckIn = 0;
-}
+ActivityTracker::ActivityTracker (std::string plan, int64_t streakTime) noexcept(false)
+:activityId {ActivityTracker::getActivityCount()+1}, longestStreak {0}, userId {auth::authProvider->getAuthenticatedUserId()},
+activity {plan}, streakDuration {streakTime * 60}, createdAt {getCurrentTime()}, lastCheckIn {0}
+{ }
 
 void ActivityTracker::save () noexcept(false)
 {

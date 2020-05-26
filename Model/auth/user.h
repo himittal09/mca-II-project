@@ -20,7 +20,7 @@ public:
      * User location in database + 1 = userId
      * @internal, donot use directly
      */
-    static unsigned int findOne (std::string email) noexcept(false);
+    static User findOne (std::string email) noexcept(false);
 
     /*
      * Creates a user in the database, doesnot checks if already retundant email
@@ -31,4 +31,6 @@ public:
 
     friend std::ifstream& operator >> (std::ifstream&, User& obj);
     friend std::ofstream& operator << (std::ofstream&, User& obj);
+
+    explicit operator bool () const noexcept;
 };

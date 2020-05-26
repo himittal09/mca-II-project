@@ -28,8 +28,10 @@ public:
     int64_t createdAt;
     std::string activity;
     unsigned int userId;
+    
     ActivityTracker () noexcept;
-    ActivityTracker (std::string plan, int64_t streakDuration) noexcept(false);
+    // input streak duration in minutes in this constructor
+    ActivityTracker (std::string plan, int64_t streakTime) noexcept(false);
 
     void save () noexcept(false);
     static std::vector<ActivityTracker> getAllActivity () noexcept(false);

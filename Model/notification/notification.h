@@ -14,8 +14,8 @@ public:
     unsigned int userId;
     std::string notification;
     
-    NotificationService ();
-    NotificationService (std::string notification, unsigned int userId);
+    NotificationService () noexcept;
+    NotificationService (std::string notification, unsigned int userId) noexcept;
 
     static void pushNotification (std::string notification, unsigned int userId) noexcept(false);
     static std::vector<std::string> getAllNotifications (unsigned int userId) noexcept(false);
