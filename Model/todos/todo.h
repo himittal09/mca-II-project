@@ -1,12 +1,5 @@
-#ifndef _IOSTREAM_
-    #define _IOSTREAM_
-    #include <iostream>
-#endif
-
-#ifndef _VECTOR_
-    #define _VECTOR_
-    #include <vector>
-#endif
+#include <iostream>
+#include <vector>
 
 class Todo
 {
@@ -30,6 +23,3 @@ public:
     friend std::ifstream& operator >> (std::ifstream&, Todo& obj);
     friend std::ofstream& operator << (std::ofstream&, Todo& obj);
 };
-
-
-

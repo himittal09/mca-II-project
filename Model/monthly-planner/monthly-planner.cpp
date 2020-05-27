@@ -13,30 +13,12 @@
     #include "../notification/notification.h"
 #endif
 
-#ifndef __UTILSH__
-    #define __UTILSH__
-    #include "../../Controller/util.h"
-#endif
+#include "../../Controller/util.h"
 
-#ifndef _IOSTREAM_
-    #define _IOSTREAM_
-    #include <iostream>
-#endif
-
-#ifndef _FSTREAM_
-    #define _FSTREAM_
-    #include <fstream>
-#endif
-
-#ifndef _STDEXCEPT_
-    #define _STDEXCEPT_
-    #include <stdexcept>
-#endif
-
-#ifndef _VECTOR_
-    #define _VECTOR_
-    #include <vector>
-#endif
+#include <iostream>
+#include <fstream>
+#include <stdexcept>
+#include <vector>
 
 std::string mpFilePath = std::string("monthlyplanner.dat");
 

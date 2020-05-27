@@ -8,25 +8,11 @@
     #include "./auth.h"
 #endif
 
-#ifndef __UTILSH__
-    #define __UTILSH__
-    #include "../../Controller/util.h"
-#endif
+#include "../../Controller/util.h"
 
-#ifndef _IOSTREAM_
-    #define _IOSTREAM_
-    #include <iostream>
-#endif
-
-#ifndef _FSTREAM_
-    #define _FSTREAM_
-    #include <fstream>
-#endif
-
-#ifndef _STDEXCEPT_
-    #define _STDEXCEPT_
-    #include <stdexcept>
-#endif
+#include <iostream>
+#include <fstream>
+#include <stdexcept>
 
 void AuthModule::authenticateUser (User& user) noexcept
 {
@@ -43,7 +29,9 @@ void AuthModule::unauthenticateUser () noexcept
 }
 
 AuthModule::AuthModule () noexcept
-:isUserAuthenticated {false}, authenticatedUserId {0}, authenticatedUsername {std::string("User")}
+    :isUserAuthenticated {false},
+    authenticatedUserId {0},
+    authenticatedUsername {std::string("User")}
 { }
 
 void AuthModule::logoutUser () noexcept(false)
@@ -70,7 +58,7 @@ void AuthModule::loginUser (std::string email, std::string password) noexcept(fa
 
     User user {User::findByCredentials(email, password)};
 
-    if (user)
+    if (!user)
     {
         throw std::runtime_error("No user found with current credentials!!");
     }

@@ -3,42 +3,22 @@
     #include "./long-term-journal.h"
 #endif
 
-#ifndef __UTILSH__
-    #define __UTILSH__
-    #include "../../Controller/util.h"
-#endif
+#include "../../Controller/util.h"
 
-#ifndef _IOSTREAM_
-    #define _IOSTREAM_
-    #include <iostream>
-#endif
-
-#ifndef _FSTREAM_
-    #define _FSTREAM_
-    #include <fstream>
-#endif
-
-#ifndef _STDEXCEPT_
-    #define _STDEXCEPT_
-    #include <stdexcept>
-#endif
-
-#ifndef _VECTOR_
-    #define _VECTOR_
-    #include <vector>
-#endif
-
-#ifndef _STRING_
-    #define _STRING_
-    #include <string>
-#endif
+#include <iostream>
+#include <fstream>
+#include <stdexcept>
+#include <vector>
+#include <string>
 
 std::string ltgjournals = std::string("ltgjournal.dat");
 
 LongTermGoalJournal::LongTermGoalJournal () noexcept :longTermGoalId {0} { }
 
 LongTermGoalJournal::LongTermGoalJournal (std::string journal, unsigned int ltgId) noexcept
-:lodgeDate {getCurrentTime()}, journal {journal}, longTermGoalId {ltgId}
+    :lodgeDate {getCurrentTime()},
+    journal {journal},
+    longTermGoalId {ltgId}
 { }
 
 // TODO: take input number of journals logded, and delete excess journals

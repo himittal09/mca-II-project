@@ -13,35 +13,13 @@
     #include "../notification/notification.h"
 #endif
 
-#ifndef __UTILSH__
-    #define __UTILSH__
-    #include "../../Controller/util.h"
-#endif
+#include "../../Controller/util.h"
 
-#ifndef _IOSTREAM_
-    #define _IOSTREAM_
-    #include <iostream>
-#endif
-
-#ifndef _FSTREAM_
-    #define _FSTREAM_
-    #include <fstream>
-#endif
-
-#ifndef _VECTOR_
-    #define _VECTOR_
-    #include <vector>
-#endif
-
-#ifndef _STDEXCEPT_
-    #define _STDEXCEPT_
-    #include <stdexcept>
-#endif
-
-#ifndef _SSTREAM_
-    #define _SSTREAM_
-    #include <sstream>
-#endif
+#include <iostream>
+#include <fstream>
+#include <vector>
+#include <stdexcept>
+#include <sstream>
 
 std::string atFilePath = std::string("activity-tracker.dat");
 
@@ -63,12 +41,19 @@ unsigned int ActivityTracker::getActivityCount () noexcept(false)
 }
 
 ActivityTracker::ActivityTracker () noexcept
-:activityId {0}, longestStreak {0}, userId {0}
+    :activityId {0},
+    longestStreak {0},
+    userId {0}
 { }
 
 ActivityTracker::ActivityTracker (std::string plan, int64_t streakTime) noexcept(false)
-:activityId {ActivityTracker::getActivityCount()+1}, longestStreak {0}, userId {auth::authProvider->getAuthenticatedUserId()},
-activity {plan}, streakDuration {streakTime * 60}, createdAt {getCurrentTime()}, lastCheckIn {0}
+    :activityId {ActivityTracker::getActivityCount()+1},
+    longestStreak {0},
+    userId {auth::authProvider->getAuthenticatedUserId()},
+    activity {plan},
+    streakDuration {streakTime * 60},
+    createdAt {getCurrentTime()},
+    lastCheckIn {0}
 { }
 
 void ActivityTracker::save () noexcept(false)

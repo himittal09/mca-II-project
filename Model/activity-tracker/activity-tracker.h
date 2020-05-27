@@ -1,12 +1,5 @@
-#ifndef _IOSTREAM_
-    #define _IOSTREAM_
-    #include <iostream>
-#endif
-
-#ifndef _VECTOR_
-    #define _VECTOR_
-    #include <vector>
-#endif
+#include <vector>
+#include <iostream>
 
 /**
  * An activity tracker, where the user will not have any time duration to complete the

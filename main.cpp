@@ -1,3 +1,7 @@
+#include "./View/menus.h"
+#include <iostream>
+#include <pqxx/pqxx>
+
 #ifndef __AUTHH__
     #define __AUTHH__
     #include "./Model/auth/auth.h"
@@ -8,20 +12,34 @@
     #include "./Controller/auth-provider.h"
 #endif
 
-#ifndef __MENUMH__
-    #define __MENUMH__
-    #include "./View/menus.h"
+#ifndef __DBPH__
+    #define __DBPH__
+    #include "./Controller/db-provider.h"
 #endif
 
-#ifndef _IOSTREAM_
-    #define _IOSTREAM_
-    #include <iostream>
+#ifndef sdncjwednwed
+#define sdncjwednwed
+    #include "./db/database-worker.h"
 #endif
+
+using namespace std;
 
 std::unique_ptr<AuthModule> auth::authProvider (new AuthModule());
+std::unique_ptr<database> db::dbProvider(new database());
 
 int main ()
 {
+    try {
+        pqxx::result R = db::dbProvider->query("SELECT * FROM notifications");
+        std::cout << "Found " << R.size() << " notifications\n";
+        for (auto row: R)
+        {
+            std::cout << row[0].c_str() << '\n';
+        }
+    } catch (const std::exception &e) {
+        cerr << e.what() << std::endl;
+    }
+
     welcomeBanner ();
     checkForMissedStuff ();
     bool exitRequest = false;

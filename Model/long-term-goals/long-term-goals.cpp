@@ -13,35 +13,13 @@
     #include "../../Controller/auth-provider.h"
 #endif
 
-#ifndef __UTILSH__
-    #define __UTILSH__
-    #include "../../Controller/util.h"
-#endif
+#include "../../Controller/util.h"
 
-#ifndef _IOSTREAM_
-    #define _IOSTREAM_
-    #include <iostream>
-#endif
-
-#ifndef _FSTREAM_
-    #define _FSTREAM_
-    #include <fstream>
-#endif
-
-#ifndef _STDEXCEPT_
-    #define _STDEXCEPT_
-    #include <stdexcept>
-#endif
-
-#ifndef _VECTOR_
-    #define _VECTOR_
-    #include <vector>
-#endif
-
-#ifndef _STRING_
-    #define _STRING_
-    #include <string>
-#endif
+#include <iostream>
+#include <fstream>
+#include <stdexcept>
+#include <vector>
+#include <string>
 
 std::string ltgFilePath = std::string("longtermgoal.dat");
 
@@ -78,8 +56,13 @@ unsigned int LongTermGoals::getGoalsCount () noexcept(false)
 LongTermGoals::LongTermGoals () noexcept :LongTermGoalId {0} { }
 
 LongTermGoals::LongTermGoals (std::string goal) noexcept(false)
-:isCompleted {false}, journals_logded {0}, goal {goal}, creationDate {getCurrentTime()},
-lastProgress {0}, userId {auth::authProvider->getAuthenticatedUserId()}, LongTermGoalId {LongTermGoals::getGoalsCount() + 1}
+    :isCompleted {false},
+    journals_logded {0},
+    goal {goal},
+    creationDate {getCurrentTime()},
+    lastProgress {0},
+    userId {auth::authProvider->getAuthenticatedUserId()},
+    LongTermGoalId {LongTermGoals::getGoalsCount() + 1}
 { }
 
 void LongTermGoals::save () noexcept(false)

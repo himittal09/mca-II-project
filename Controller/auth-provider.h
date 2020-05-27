@@ -1,7 +1,4 @@
-#ifndef _MEMORY_
-    #define _MEMORY_
-    #include <memory>
-#endif
+#include <memory>
 
 #ifndef __AUTHH__
     #define __AUTHH__
@@ -16,6 +13,5 @@
         extern std::unique_ptr<AuthModule> authProvider;
     }
 #endif
-
 
 // possible to use atomic to make the pointer accessible amongst all threads in multithreaded anvironment

@@ -3,10 +3,7 @@
     #include "./long-term-journal.h"
 #endif
 
-#ifndef _IOSTREAM_
-    #define _IOSTREAM_
-    #include <iostream>
-#endif
+#include <iostream>
 
 class LongTermGoals
 {

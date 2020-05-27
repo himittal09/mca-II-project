@@ -1,11 +1,8 @@
+#include <iostream>
+
 #ifndef __USERH__
     #define __USERH__
     #include "./user.h"
-#endif
-
-#ifndef _IOSTREAM_
-    #define _IOSTREAM_
-    #include <iostream>
 #endif
 
 class AuthModule

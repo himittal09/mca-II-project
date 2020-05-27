@@ -3,25 +3,10 @@
     #include "./notification.h"
 #endif
 
-#ifndef _IOSTREAM_
-    #define _IOSTREAM_
-    #include <iostream>
-#endif
-
-#ifndef _FSTREAM_
-    #define _FSTREAM_
-    #include <fstream>
-#endif
-
-#ifndef _STDEXCEPT_
-    #define _STDEXCEPT_
-    #include <stdexcept>
-#endif
-
-#ifndef _VECTOR_
-    #define _VECTOR_
-    #include <vector>
-#endif
+#include <iostream>
+#include <fstream>
+#include <stdexcept>
+#include <vector>
 
 // #ifndef _FILESYSTEM_
 //     #define _FILESYSTEM_
@@ -33,7 +18,8 @@ std::string notificationFilePath = std::string("notifications.dat");
 NotificationService::NotificationService () noexcept : userId {0} { }
 
 NotificationService::NotificationService (std::string notification, unsigned int userId) noexcept
-:notification{notification}, userId {userId}
+    :notification{notification},
+    userId {userId}
 { }
 
 void NotificationService::pushNotification (std::string notification, unsigned int userId) noexcept(false)

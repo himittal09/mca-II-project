@@ -1,11 +1,11 @@
-if [ -d "Build" ]; then
-	echo "Build directory already exists!"
-	exit
-fi
+# if [ -d "Build" ]; then
+# 	echo "Build directory already exists!"
+# 	exit
+# fi
 
 echo "Please wait while build process finishes..."
 
-mkdir Build
+# mkdir Build
 
 while IFS= read -r -d '' -u 9
 do
@@ -13,8 +13,11 @@ do
 	g++ -std=c++17 -c $REPLY -o ./Build/${f%.cpp}.o
 done 9< <( find . -maxdepth 5 -type f -name '*.cpp' -print0 )
 
-g++ ./Build/*.o -o ProductivityTracker.out
+# g++ -std=c++17 -c main.cpp -o ./Build/main.o
 
-rm -r Build
+# notice the two options needed to link with postgreSQL C++ library
+g++ ./Build/*.o -lpqxx -lpq -o ProductivityTracker.out
+
+# rm -r Build
 
 echo "Build Finished..."

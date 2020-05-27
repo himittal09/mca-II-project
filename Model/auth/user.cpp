@@ -1,21 +1,10 @@
+#include <fstream>
+#include <iostream>
+#include <stdexcept>
+
 #ifndef __USERH__
     #define __USERH__
     #include "./user.h"
-#endif
-
-#ifndef _IOSTREAM_
-    #define _IOSTREAM_
-    #include <iostream>
-#endif
-
-#ifndef _FSTREAM_
-    #define _FSTREAM_
-    #include <fstream>
-#endif
-
-#ifndef _STDEXCEPT_
-    #define _STDEXCEPT_
-    #include <stdexcept>
 #endif
 
 std::string userFilename = std::string("user.dat");
@@ -38,7 +27,10 @@ unsigned int User::getUsersCount () noexcept(false)
 }
 
 User::User (std::string email, std::string password, std::string name) noexcept(false)
-:email {email}, password{password}, name {name}, userId {User::getUsersCount() + 1}
+    :email {email},
+    password{password},
+    name {name},
+    userId {User::getUsersCount() + 1}
 { }
 
 User::User () noexcept : userId {0} { }

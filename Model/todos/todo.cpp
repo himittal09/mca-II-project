@@ -8,25 +8,11 @@
     #include "../../Controller/auth-provider.h"
 #endif
 
-#ifndef __UTILSH__
-    #define __UTILSH__
-    #include "../../Controller/util.h"
-#endif
+#include "../../Controller/util.h"
 
-#ifndef _IOSTREAM_
-    #define _IOSTREAM_
-    #include <iostream>
-#endif
-
-#ifndef _FSTREAM_
-    #define _FSTREAM_
-    #include <fstream>
-#endif
-
-#ifndef _STDEXCEPT_
-    #define _STDEXCEPT_
-    #include <stdexcept>
-#endif
+#include <stdexcept>
+#include <iostream>
+#include <fstream>
 
 // #ifndef _FILESYSTEM_
 //     #define _FILESYSTEM_
@@ -55,8 +41,12 @@ unsigned int Todo::getTodoCount () noexcept(false)
 Todo::Todo () noexcept : todoId {0} { }
 
 Todo::Todo (std::string todoBody) noexcept(false)
-:todo {todoBody}, todoId {Todo::getTodoCount() + 1}, createrId {auth::authProvider->getAuthenticatedUserId()},
-completed {false}, createdAt {getCurrentTime()}, completedAt {0}
+    :todo {todoBody},
+    todoId {Todo::getTodoCount() + 1},
+    createrId {auth::authProvider->getAuthenticatedUserId()},
+    completed {false},
+    createdAt {getCurrentTime()},
+    completedAt {0}
 { }
 
 std::vector<Todo> Todo::getAllTodos (bool getCompleted) noexcept(false)
