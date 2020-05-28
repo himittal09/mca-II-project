@@ -1,11 +1,10 @@
 #include <memory>
 
-#ifndef sdncjwednwed
-#define sdncjwednwed
-    #include "../db/database-worker.h"
-#endif
+#include "../db/database-worker.h"
 
-namespace db
-{
-    extern std::unique_ptr<database> dbProvider;
-}
+#ifndef __DBPH__
+#define __DBPH__
+
+extern std::unique_ptr<database> dbProvider;
+
+#endif

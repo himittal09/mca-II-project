@@ -1,13 +1,11 @@
 #include <vector>
 #include <iostream>
 
-/**
- * An activity tracker, where the user will not have any time duration to complete the
-task, but he will have to do it/ complete it in some fixed interval. Users can be notified
-to complete the task, or they not be notified. Users will have to check in for their task
-to mark an interval complete. We can have streaks for user to further motivate them
-to complete their goals in time.
-*/
+class ActivityTracker;
+
+#ifndef __ATH__
+#define __ATH__
+
 class ActivityTracker
 {
 
@@ -35,3 +33,5 @@ public:
     friend std::ifstream& operator >> (std::ifstream& stream, ActivityTracker& obj);
     friend std::ofstream& operator << (std::ofstream& stream, ActivityTracker& obj);
 };
+
+#endif

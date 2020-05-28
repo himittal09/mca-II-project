@@ -1,58 +1,43 @@
-#include "./View/menus.h"
 #include <iostream>
 #include <pqxx/pqxx>
 
-#ifndef __AUTHH__
-    #define __AUTHH__
-    #include "./Model/auth/auth.h"
-#endif
-
-#ifndef __APH__
-    #define __APH__
-    #include "./Controller/auth-provider.h"
-#endif
-
-#ifndef __DBPH__
-    #define __DBPH__
-    #include "./Controller/db-provider.h"
-#endif
-
-#ifndef sdncjwednwed
-#define sdncjwednwed
-    #include "./db/database-worker.h"
-#endif
+#include "./Model/auth/auth.h"
+#include "./db/database-worker.h"
+#include "./Controller/auth-provider.h"
+#include "./Controller/db-provider.h"
+#include "./View/menus.h"
 
 using namespace std;
 
-std::unique_ptr<AuthModule> auth::authProvider (new AuthModule());
-std::unique_ptr<database> db::dbProvider(new database());
+std::unique_ptr<AuthModule> authProvider (new AuthModule());
+std::unique_ptr<database> dbProvider(new database());
 
 int main ()
 {
     try {
-        pqxx::result R = db::dbProvider->query("SELECT * FROM notifications");
+        pqxx::result R = dbProvider->query("SELECT * FROM notifications");
         std::cout << "Found " << R.size() << " notifications\n";
         for (auto row: R)
         {
             std::cout << row[0].c_str() << '\n';
         }
     } catch (const std::exception &e) {
-        cerr << e.what() << std::endl;
+        std::cerr << e.what() << std::endl;
     }
 
-    welcomeBanner ();
-    checkForMissedStuff ();
+    view::welcomeBanner ();
+    view::checkForMissedStuff ();
     bool exitRequest = false;
     while (!exitRequest)
     {
-        if (auth::authProvider->getIfUserAuthenticated())
+        if (authProvider->getIfUserAuthenticated())
         {
-            std::cout << "\n\nWelcome " << auth::authProvider->getAuthenticatedUsername() << "\n";
-            exitRequest = mainMenu ();
+            std::cout << "\n\nWelcome " << authProvider->getAuthenticatedUsername() << "\n";
+            exitRequest = view::mainMenu ();
         }
         else
         {
-            exitRequest = authMenu ();
+            exitRequest = view::authMenu ();
         }
     }
     std::cout << "\nSee you soon ;)\n";

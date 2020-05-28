@@ -1,25 +1,13 @@
-#ifndef __ATH__
-    #define __ATH__
-    #include "./activity-tracker.h"
-#endif
-
-#ifndef __APH__
-    #define __APH__
-    #include "../../Controller/auth-provider.h"
-#endif
-
-#ifndef __NOTIFICATIONH__
-    #define __NOTIFICATIONH__
-    #include "../notification/notification.h"
-#endif
-
-#include "../../Controller/util.h"
-
 #include <iostream>
 #include <fstream>
 #include <vector>
 #include <stdexcept>
 #include <sstream>
+
+#include "../../Controller/util.h"
+#include "./activity-tracker.h"
+#include "../notification/notification.h"
+#include "../../Controller/auth-provider.h"
 
 std::string atFilePath = std::string("activity-tracker.dat");
 
@@ -49,7 +37,7 @@ ActivityTracker::ActivityTracker () noexcept
 ActivityTracker::ActivityTracker (std::string plan, int64_t streakTime) noexcept(false)
     :activityId {ActivityTracker::getActivityCount()+1},
     longestStreak {0},
-    userId {auth::authProvider->getAuthenticatedUserId()},
+    userId {authProvider->getAuthenticatedUserId()},
     activity {plan},
     streakDuration {streakTime * 60},
     createdAt {getCurrentTime()},
@@ -78,7 +66,7 @@ std::vector<ActivityTracker> ActivityTracker::getAllActivity () noexcept(false)
     
     for (ActivityTracker obj; !(stream >> obj).eof(); )
     {
-        if (obj.userId == auth::authProvider->getAuthenticatedUserId())
+        if (obj.userId == authProvider->getAuthenticatedUserId())
         {
             myActivities.push_back(obj);
         }

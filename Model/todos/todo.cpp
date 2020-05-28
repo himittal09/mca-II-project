@@ -1,18 +1,10 @@
-#ifndef __TODOH__
-    #define __TODOH__
-    #include "./todo.h"
-#endif
-
-#ifndef __APH__
-    #define __APH__
-    #include "../../Controller/auth-provider.h"
-#endif
-
-#include "../../Controller/util.h"
-
 #include <stdexcept>
 #include <iostream>
 #include <fstream>
+
+#include "../../Controller/auth-provider.h"
+#include "../../Controller/util.h"
+#include "./todo.h"
 
 // #ifndef _FILESYSTEM_
 //     #define _FILESYSTEM_
@@ -43,7 +35,7 @@ Todo::Todo () noexcept : todoId {0} { }
 Todo::Todo (std::string todoBody) noexcept(false)
     :todo {todoBody},
     todoId {Todo::getTodoCount() + 1},
-    createrId {auth::authProvider->getAuthenticatedUserId()},
+    createrId {authProvider->getAuthenticatedUserId()},
     completed {false},
     createdAt {getCurrentTime()},
     completedAt {0}
@@ -58,7 +50,7 @@ std::vector<Todo> Todo::getAllTodos (bool getCompleted) noexcept(false)
     }
 
     std::vector<Todo> allTodos;
-    unsigned int authenticatedUserId {auth::authProvider->getAuthenticatedUserId()};
+    unsigned int authenticatedUserId {authProvider->getAuthenticatedUserId()};
 
     for (Todo obj; !(stream >> obj).eof(); )
     {

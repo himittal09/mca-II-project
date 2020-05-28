@@ -2,10 +2,7 @@
 #include <iostream>
 #include <stdexcept>
 
-#ifndef __USERH__
-    #define __USERH__
-    #include "./user.h"
-#endif
+#include "./user.h"
 
 std::string userFilename = std::string("user.dat");
 

@@ -1,15 +1,11 @@
-#ifndef __LTJH__
-    #define __LTJH__
-    #include "./long-term-journal.h"
-#endif
-
-#include "../../Controller/util.h"
-
 #include <iostream>
 #include <fstream>
 #include <stdexcept>
 #include <vector>
 #include <string>
+
+#include "./long-term-journal.h"
+#include "../../Controller/util.h"
 
 std::string ltgjournals = std::string("ltgjournal.dat");
 

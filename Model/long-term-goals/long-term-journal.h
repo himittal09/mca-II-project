@@ -1,12 +1,10 @@
-#ifndef _VECTOR_
-    #define _VECTOR_
-    #include <vector>
-#endif
+#include <iostream>
+#include <vector>
 
-#ifndef _IOSTREAM_
-    #define _IOSTREAM_
-    #include <iostream>
-#endif
+class LongTermGoalJournal;
+
+#ifndef __LTJH__
+#define __LTJH__
 
 class LongTermGoalJournal
 {
@@ -23,3 +21,5 @@ public:
     friend std::ifstream& operator >> (std::ifstream&, LongTermGoalJournal& obj);
     friend std::ofstream& operator << (std::ofstream&, LongTermGoalJournal& obj);
 };
+
+#endif

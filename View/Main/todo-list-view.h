@@ -2,33 +2,32 @@
 #include <vector>
 #include <iomanip>
 #include <iostream>
-#include "../../Controller/util.h"
 
-#ifndef __TODOH__
-    #define __TODOH__
-    #include "../../Model/todos/todo.h"
-#endif
+#include "../../Controller/util.h"
+#include "../../Model/todos/todo.h"
 
 using namespace std;
 
-bool todoMenu ();
-int askTodoMenu ();
-void addTodo ();
-void displayTodos ();
+namespace view {
+    bool todoMenu ();
+    int askTodoMenu ();
+    void addTodo ();
+    void displayTodos ();
+}
 
 #ifndef __TODOVH__
 #define __TODOVH__
 
-inline bool todoMenu ()
+inline bool view::todoMenu ()
 {
-    int option = askTodoMenu();
+    int option = view::askTodoMenu();
     if (option == 1)
     {
-        displayTodos();
+        view::displayTodos();
     }
     else if (option == 2)
     {
-        addTodo();
+        view::addTodo();
     }
     else if (option == 4)
     {
@@ -37,7 +36,7 @@ inline bool todoMenu ()
     return false;
 }
 
-inline int askTodoMenu ()
+inline int view::askTodoMenu ()
 {
     int option=0;
     while (true)
@@ -60,7 +59,7 @@ inline int askTodoMenu ()
     return option;
 }
 
-inline void addTodo ()
+inline void view::addTodo ()
 {
     std::string todo;
     cout << "Enter the todo objective: ";
@@ -78,7 +77,7 @@ inline void addTodo ()
     cout << "New todo created!!\n";
 }
 
-inline void displayTodos ()
+inline void view::displayTodos ()
 {
     char option;
     int todoNum;

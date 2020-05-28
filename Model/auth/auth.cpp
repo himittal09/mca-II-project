@@ -1,18 +1,10 @@
-#ifndef __USERH__
-    #define __USERH__
-    #include "./user.h"
-#endif
-
-#ifndef __AUTHH__
-    #define __AUTHH__
-    #include "./auth.h"
-#endif
-
-#include "../../Controller/util.h"
-
 #include <iostream>
 #include <fstream>
 #include <stdexcept>
+
+#include "./user.h"
+#include "./auth.h"
+#include "../../Controller/util.h"
 
 void AuthModule::authenticateUser (User& user) noexcept
 {

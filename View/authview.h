@@ -1,38 +1,33 @@
 #include <stdexcept>
 #include <iostream>
+
 #include "../Controller/util.h"
-
-#ifndef __AUTHH__
-    #define __AUTHH__
-    #include "../Model/auth/auth.h"
-#endif
-
-#ifndef __APH__
-    #define __APH__
-    #include "../Controller/auth-provider.h"
-#endif
+#include "../Model/auth/auth.h"
+#include "../Controller/auth-provider.h"
 
 using namespace std;
 
-bool authMenu ();
-int askAuthMenu ();
-void tryLogin ();
-void trySignup ();
+namespace view {
+    bool authMenu ();
+    int askAuthMenu ();
+    void tryLogin ();
+    void trySignup ();
+}
 
 #ifndef __AUTHVH__
 #define __AUTHVH__
 
 // return true for exit request
-inline bool authMenu ()
+inline bool view::authMenu ()
 {
-    int option = askAuthMenu();
+    int option = view::askAuthMenu();
     if (option == 1)
     {
-        tryLogin();
+        view::tryLogin();
     }
     else if (option == 2)
     {
-        trySignup();
+        view::trySignup();
     }
     else if (option == 3)
     {
@@ -41,7 +36,7 @@ inline bool authMenu ()
     return false;
 }
 
-inline int askAuthMenu ()
+inline int view::askAuthMenu ()
 {
     int option=0;
     while (true)
@@ -64,7 +59,7 @@ inline int askAuthMenu ()
     return option;
 }
 
-inline void tryLogin ()
+inline void view::tryLogin ()
 {   
     string email, password;
     cout << "Email: ";
@@ -73,7 +68,7 @@ inline void tryLogin ()
     cin >> password;
     try
     {
-        auth::authProvider->loginUser(email, password);
+        authProvider->loginUser(email, password);
     }
     catch(const std::runtime_error& e)
     {
@@ -81,7 +76,7 @@ inline void tryLogin ()
     }
 }
 
-inline void trySignup ()
+inline void view::trySignup ()
 {
     std::string email, password, name;
     cout << "Email: ";
@@ -95,7 +90,7 @@ inline void trySignup ()
     std::getline(std::cin, name);
     try
     {
-        auth::authProvider->signupUser(email, password, name);
+        authProvider->signupUser(email, password, name);
     }
     catch(const std::runtime_error& e)
     {

@@ -1,9 +1,11 @@
-#ifndef __LTJH__
-    #define __LTJH__
-    #include "./long-term-journal.h"
-#endif
-
 #include <iostream>
+
+#include "./long-term-journal.h"
+
+class LongTermGoals;
+
+#ifndef __LTGH__
+#define __LTGH__
 
 class LongTermGoals
 {
@@ -32,3 +34,5 @@ public:
     friend std::ifstream& operator >> (std::ifstream&, LongTermGoals& obj);
     friend std::ofstream& operator << (std::ofstream&, LongTermGoals& obj);
 };
+
+#endif

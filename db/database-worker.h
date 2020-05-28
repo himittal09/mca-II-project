@@ -1,17 +1,22 @@
 #include <pqxx/pqxx>
 
-// #ifndef __DBWORKER__
-// #define __DBWORKER__
+class database;
+
+#ifndef __DBWORKER__
+#define __DBWORKER__
 
 class database
 {
-    pqxx::connection conn;
+    std::string connectionString;
 public:
     database () noexcept(false);
-    ~database ();
 
-    pqxx::result queryTransact (std::string sql);
-    pqxx::result query (std::string sql);
+    // mo schema or data modifiction work with trnsact
+    
+    pqxx::result queryTransact (std::string sql) noexcept(false);
+
+    // basically only select with query
+    pqxx::result query (std::string sql) noexcept(false);
 };
 
-// #endif
+#endif

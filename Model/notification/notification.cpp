@@ -1,12 +1,9 @@
-#ifndef __NOTIFICATIONH__
-    #define __NOTIFICATIONH__
-    #include "./notification.h"
-#endif
-
 #include <iostream>
 #include <fstream>
 #include <stdexcept>
 #include <vector>
+
+#include "./notification.h"
 
 // #ifndef _FILESYSTEM_
 //     #define _FILESYSTEM_

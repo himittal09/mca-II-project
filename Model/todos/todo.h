@@ -1,9 +1,13 @@
 #include <iostream>
 #include <vector>
 
+class Todo;
+
+#ifndef __TODOH__
+#define __TODOH__
+
 class Todo
 {
-
     static unsigned int getTodoCount () noexcept(false);
 public:
     unsigned int todoId;
@@ -23,3 +27,5 @@ public:
     friend std::ifstream& operator >> (std::ifstream&, Todo& obj);
     friend std::ofstream& operator << (std::ofstream&, Todo& obj);
 };
+
+#endif

@@ -3,35 +3,32 @@
 #include <vector>
 #include <iomanip>
 
+#include "../../Controller/util.h"
+#include "../../Model/activity-tracker/activity-tracker.h"
+
 using namespace std;
 
-#include "../../Controller/util.h"
-
-#ifndef __ATH__
-    #define __ATH__
-    #include "../../Model/activity-tracker/activity-tracker.h"
-#endif
-
-bool atMenu ();
-int askATMenu ();
-void addAT ();
-void displayAT ();
-void checkForMissedAT ();
+namespace view {
+    bool atMenu ();
+    int askATMenu ();
+    void addAT ();
+    void displayAT ();
+    void checkForMissedAT ();
+}
 
 #ifndef __ATVH__
 #define __ATVH__
 
-
-inline bool atMenu ()
+inline bool view::atMenu ()
 {
-    int option = askATMenu();
+    int option = view::askATMenu();
     if (option == 1)
     {
-        displayAT();
+        view::displayAT();
     }
     else if (option == 2)
     {
-        addAT();
+        view::addAT();
     }
     else if (option == 4)
     {
@@ -40,7 +37,7 @@ inline bool atMenu ()
     return false;
 }
 
-inline int askATMenu ()
+inline int view::askATMenu ()
 {
     int option=0;
     while (true)
@@ -63,7 +60,7 @@ inline int askATMenu ()
     return option;
 }
 
-inline void addAT ()
+inline void view::addAT ()
 {
     std::string activityT;
     cout << "Enter the todo objective: ";
@@ -84,7 +81,7 @@ inline void addAT ()
     cout << "New activity created!!\n";
 }
 
-inline void displayAT ()
+inline void view::displayAT ()
 {
     std::vector<ActivityTracker> activities{ActivityTracker::getAllActivity()};
     if (activities.size() == 0)
@@ -121,7 +118,7 @@ inline void displayAT ()
     }
 }
 
-inline void checkForMissedAT ()
+inline void view::checkForMissedAT ()
 {
     try
     {

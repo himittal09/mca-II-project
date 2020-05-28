@@ -1,6 +1,11 @@
 #include <iostream>
 #include <vector>
 
+class MonthlyPlanner;
+
+#ifndef __MONTHLYH__
+#define __MONTHLYH__
+
 class MonthlyPlanner
 {
     static unsigned int getPlannerCount () noexcept(false);
@@ -23,3 +28,5 @@ public:
     friend std::ifstream& operator >> (std::ifstream&, MonthlyPlanner& obj);
     friend std::ofstream& operator << (std::ofstream&, MonthlyPlanner& obj);
 };
+
+#endif

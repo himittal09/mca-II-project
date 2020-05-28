@@ -2,34 +2,33 @@
 #include <vector>
 #include <iomanip>
 #include <iostream>
-#include "../../Controller/util.h"
 
-#ifndef __MONTHLYH__
-    #define __MONTHLYH__
-    #include "../../Model/monthly-planner/monthly-planner.h"
-#endif
+#include "../../Controller/util.h"
+#include "../../Model/monthly-planner/monthly-planner.h"
 
 using namespace std;
 
-bool mpMenu ();
-int askMPMenu ();
-void addMP ();
-void displayMP ();
-void checkForMissedMP ();
+namespace view {
+    bool mpMenu ();
+    int askMPMenu ();
+    void addMP ();
+    void displayMP ();
+    void checkForMissedMP ();
+}
 
 #ifndef __MONTHLYVH__
 #define __MONTHLYVH__
 
-inline bool mpMenu ()
+inline bool view::mpMenu ()
 {
-    int option = askMPMenu();
+    int option = view::askMPMenu();
     if (option == 1)
     {
-        displayMP();
+        view::displayMP();
     }
     else if (option == 2)
     {
-        addMP();
+        view::addMP();
     }
     else if (option == 4)
     {
@@ -38,7 +37,7 @@ inline bool mpMenu ()
     return false;
 }
 
-inline int askMPMenu ()
+inline int view::askMPMenu ()
 {
     int option=0;
     while (true)
@@ -61,7 +60,7 @@ inline int askMPMenu ()
     return option;
 }
 
-inline void addMP ()
+inline void view::addMP ()
 {
     std::string planner;
     cout << "Enter the planner objective: ";
@@ -79,7 +78,7 @@ inline void addMP ()
     cout << "New plan created!!\n";
 }
 
-inline void displayMP ()
+inline void view::displayMP ()
 {
     char option;
     cout << "\nView completed plans? (y/n)";
@@ -125,7 +124,7 @@ inline void displayMP ()
     }
 }
 
-inline void checkForMissedMP ()
+inline void view::checkForMissedMP ()
 {
     try
     {

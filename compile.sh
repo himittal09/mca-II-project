@@ -15,6 +15,8 @@ done 9< <( find . -maxdepth 5 -type f -name '*.cpp' -print0 )
 
 # g++ -std=c++17 -c main.cpp -o ./Build/main.o
 
+echo "Compilation finished, starting to link compiled files"
+
 # notice the two options needed to link with postgreSQL C++ library
 g++ ./Build/*.o -lpqxx -lpq -o ProductivityTracker.out
 

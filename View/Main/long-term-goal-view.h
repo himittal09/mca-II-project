@@ -4,40 +4,33 @@
 #include <iomanip>
 
 #include "../../Controller/util.h"
-
-#ifndef __LTGH__
-    #define __LTGH__
-    #include "../../Model/long-term-goals/long-term-goals.h"
-#endif
-
-#ifndef __LTJH__
-    #define __LTJH__
-    #include "../../Model/long-term-goals/long-term-journal.h"
-#endif
+#include "../../Model/long-term-goals/long-term-goals.h"
+#include "../../Model/long-term-goals/long-term-journal.h"
 
 using namespace std;
 
-bool ltgMenu ();
-int askLTGMenu ();
-void addLTG ();
-void displayLTG ();
-int askLTGSubMenu ( bool completed);
-void execLTGSubMenu (LongTermGoals& obj, int order);
+namespace view {
+    bool ltgMenu ();
+    int askLTGMenu ();
+    void addLTG ();
+    void displayLTG ();
+    int askLTGSubMenu ( bool completed);
+    void execLTGSubMenu (LongTermGoals& obj, int order);
+}
 
 #ifndef __LTGVH__
 #define __LTGVH__
 
-
-inline bool ltgMenu ()
+inline bool view::ltgMenu ()
 {
-    int option = askLTGMenu();
+    int option = view::askLTGMenu();
     if (option == 1)
     {
-        displayLTG();
+        view::displayLTG();
     }
     else if (option == 2)
     {
-        addLTG();
+        view::addLTG();
     }
     else if (option == 4)
     {
@@ -46,7 +39,7 @@ inline bool ltgMenu ()
     return false;
 }
 
-inline int askLTGMenu ()
+inline int view::askLTGMenu ()
 {
     int option=0;
     while (true)
@@ -69,7 +62,7 @@ inline int askLTGMenu ()
     return option;
 }
 
-inline void addLTG ()
+inline void view::addLTG ()
 {
     std::string goal;
     cout << "Enter the goal objective: ";
@@ -87,7 +80,7 @@ inline void addLTG ()
     cout << "New goal created!!\n";
 }
 
-inline void displayLTG ()
+inline void view::displayLTG ()
 {
     char option;
     cout << "\nView completed goals? (y/n)";
@@ -121,7 +114,7 @@ inline void displayLTG ()
     }
     try
     {
-        execLTGSubMenu (goals[goalNum-1], askLTGSubMenu(goals[goalNum-1].isCompleted));
+        view::execLTGSubMenu (goals[goalNum-1], view::askLTGSubMenu(goals[goalNum-1].isCompleted));
     }
     catch(const std::runtime_error& e)
     {
@@ -129,7 +122,7 @@ inline void displayLTG ()
     }
 }
 
-inline int askLTGSubMenu (bool completed)
+inline int view::askLTGSubMenu (bool completed)
 {
     int option=0;
     while (true)
@@ -154,7 +147,7 @@ inline int askLTGSubMenu (bool completed)
     return option;
 }
 
-inline void execLTGSubMenu (LongTermGoals& obj, int order)
+inline void view::execLTGSubMenu (LongTermGoals& obj, int order)
 {
     if (order == 1)
     {

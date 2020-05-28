@@ -1,6 +1,11 @@
 #include <vector>
 #include <iostream>
 
+class NotificationService;
+
+#ifndef __NOTIFICATIONH__
+#define __NOTIFICATIONH__
+
 class NotificationService
 {
 public:
@@ -16,3 +21,5 @@ public:
     friend std::ifstream& operator >> (std::ifstream& stream, NotificationService& obj);
     friend std::ofstream& operator << (std::ofstream& stream, NotificationService& obj);
 };
+
+#endif

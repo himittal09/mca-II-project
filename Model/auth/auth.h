@@ -1,9 +1,11 @@
 #include <iostream>
 
-#ifndef __USERH__
-    #define __USERH__
-    #include "./user.h"
-#endif
+#include "./user.h"
+
+class AuthModule;
+
+#ifndef __AUTHH__
+#define __AUTHH__
 
 class AuthModule
 {
@@ -24,3 +26,5 @@ public:
     unsigned int getAuthenticatedUserId () noexcept;
     std::string getAuthenticatedUsername () noexcept;
 };
+
+#endif

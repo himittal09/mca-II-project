@@ -1,24 +1,12 @@
-#ifndef __MONTHLYH__
-    #define __MONTHLYH__
-    #include "./monthly-planner.h"
-#endif
-
-#ifndef __APH__
-    #define __APH__
-    #include "../../Controller/auth-provider.h"
-#endif
-
-#ifndef __NOTIFICATIONH__
-    #define __NOTIFICATIONH__
-    #include "../notification/notification.h"
-#endif
-
-#include "../../Controller/util.h"
-
 #include <iostream>
 #include <fstream>
 #include <stdexcept>
 #include <vector>
+
+#include "../../Controller/util.h"
+#include "./monthly-planner.h"
+#include "../notification/notification.h"
+#include "../../Controller/auth-provider.h"
 
 std::string mpFilePath = std::string("monthlyplanner.dat");
 
@@ -41,7 +29,7 @@ unsigned int MonthlyPlanner::getPlannerCount () noexcept(false)
 MonthlyPlanner::MonthlyPlanner () noexcept :plannerId {0} { }
 
 MonthlyPlanner::MonthlyPlanner (std::string monthlyPlan) noexcept(false)
-:monthlyPlan {monthlyPlan}, userId {auth::authProvider->getAuthenticatedUserId()}, isCompleted {false},
+:monthlyPlan {monthlyPlan}, userId {authProvider->getAuthenticatedUserId()}, isCompleted {false},
 createdAt {getCurrentTime()}, plannerId {MonthlyPlanner::getPlannerCount() + 1}
 { }
 
@@ -101,7 +89,7 @@ std::vector<MonthlyPlanner> MonthlyPlanner::getallPlans (bool getCompleted) noex
     }
 
     std::vector<MonthlyPlanner> myPlans;
-    unsigned int authenticatedUserId {auth::authProvider->getAuthenticatedUserId()};
+    unsigned int authenticatedUserId {authProvider->getAuthenticatedUserId()};
 
     for (MonthlyPlanner obj; !(stream >> obj).eof(); )
     {

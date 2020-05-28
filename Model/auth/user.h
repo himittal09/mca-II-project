@@ -1,5 +1,10 @@
 #include <iostream>
 
+class User;
+
+#ifndef __USERH__
+#define __USERH__
+
 class User
 {
     unsigned int getUsersCount () noexcept(false);
@@ -31,3 +36,5 @@ public:
 
     explicit operator bool () const noexcept;
 };
+
+#endif

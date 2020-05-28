@@ -1,25 +1,13 @@
-#ifndef __LTGH__
-    #define __LTGH__
-    #include "./long-term-goals.h"
-#endif
-
-#ifndef __LTJH__
-    #define __LTJH__
-    #include "./long-term-journal.h"
-#endif
-
-#ifndef __APH__
-    #define __APH__
-    #include "../../Controller/auth-provider.h"
-#endif
-
-#include "../../Controller/util.h"
-
 #include <iostream>
 #include <fstream>
 #include <stdexcept>
 #include <vector>
 #include <string>
+
+#include "../../Controller/util.h"
+#include "./long-term-goals.h"
+#include "./long-term-journal.h"
+#include "../../Controller/auth-provider.h"
 
 std::string ltgFilePath = std::string("longtermgoal.dat");
 
@@ -61,7 +49,7 @@ LongTermGoals::LongTermGoals (std::string goal) noexcept(false)
     goal {goal},
     creationDate {getCurrentTime()},
     lastProgress {0},
-    userId {auth::authProvider->getAuthenticatedUserId()},
+    userId {authProvider->getAuthenticatedUserId()},
     LongTermGoalId {LongTermGoals::getGoalsCount() + 1}
 { }
 
@@ -85,7 +73,7 @@ std::vector<LongTermGoals> LongTermGoals::getAllGoals (bool getCompleted) noexce
     }
 
     std::vector<LongTermGoals> myltg;
-    unsigned int authenticatedUserId {auth::authProvider->getAuthenticatedUserId()};
+    unsigned int authenticatedUserId {authProvider->getAuthenticatedUserId()};
 
     for (LongTermGoals obj; !(stream >> obj).eof(); )
     {

@@ -3,54 +3,48 @@
 #include "./long-term-goal-view.h"
 #include "./monthly-planner-view.h"
 #include "./todo-list-view.h"
-
-#ifndef __APH__
-    #define __APH__
-    #include "../../Controller/auth-provider.h"
-#endif
-
-#ifndef __NOTIFICATIONH__
-    #define __NOTIFICATIONH__
-    #include "../../Model/notification/notification.h"
-#endif
+#include "../../Model/notification/notification.h"
+#include "../../Controller/auth-provider.h"
 
 using namespace std;
 
-bool mainMenu ();
-int askmainMenu ();
-void printNotifications ();
-void checkForMissedStuff ();
+namespace view {
+    bool mainMenu ();
+    int askmainMenu ();
+    void printNotifications ();
+    void checkForMissedStuff ();
+}
 
 #ifndef __MMENUVH__
 #define __MMENUVH__
 
 // return true for exit request
-inline bool mainMenu ()
+inline bool view::mainMenu ()
 {
-    int option = askmainMenu();
+    int option = view::askmainMenu();
     if (option == 1)
     {
-        return todoMenu();
+        return view::todoMenu();
     }
     else if (option == 2)
     {
-        return mpMenu ();
+        return view::mpMenu ();
     }
     else if (option == 3)
     {
-        return atMenu ();
+        return view::atMenu ();
     }
     else if (option == 4)
     {
-        return ltgMenu ();
+        return view::ltgMenu ();
     }
     else if (option == 5)
     {
-        printNotifications();
+        view::printNotifications();
     }
     else if (option == 6)
     {
-        auth::authProvider->logoutUser();
+        authProvider->logoutUser();
     }
     else if (option == 7)
     {
@@ -59,7 +53,7 @@ inline bool mainMenu ()
     return false;
 }
 
-inline int askmainMenu ()
+inline int view::askmainMenu ()
 {
     int option=0;
     while (true)
@@ -85,9 +79,9 @@ inline int askmainMenu ()
     return option;
 }
 
-inline void printNotifications ()
+inline void view::printNotifications ()
 {
-    std::vector<std::string> notifications {NotificationService::getAllNotifications(auth::authProvider->getAuthenticatedUserId())};
+    std::vector<std::string> notifications {NotificationService::getAllNotifications(authProvider->getAuthenticatedUserId())};
     if (!notifications.size())
     {
         cout << "No new Notifications!!\n";
@@ -99,10 +93,10 @@ inline void printNotifications ()
     }
 }
 
-inline void checkForMissedStuff ()
+inline void view::checkForMissedStuff ()
 {
-    checkForMissedAT ();
-    checkForMissedMP ();
+    view::checkForMissedAT ();
+    view::checkForMissedMP ();
 }
 
 #endif

@@ -1,38 +1,19 @@
 #include <iostream>
 #include <pqxx/pqxx>
 
-#ifndef sdncjwednwed
-#define sdncjwednwed
-    #include "./database-worker.h"
-#endif
+#include "./database-worker.h"
 
 database::database () noexcept(false)
-    :conn("postgresql://himanshu:mynewpass@127.0.0.1:5432/test-db")
+    :connectionString("postgresql://himanshu:mynewpass@127.0.0.1:5432/test-db")
 {
     // not only connect to a database here, but also create database, and also create tables here
     // after checking if tables doesn't exists
-    try
-    {
-        if (conn.is_open())
-        {
-            std::cout << "Opened database successfully: " << conn.dbname() << "\n";
-        }
-        else
-        {
-            std::cout << "Can't open database\n";
-        }
-    }
-    catch (const std::exception &e)
-    {
-        throw e;
-    }
 }
 
-database::~database () {}
+pqxx::result database::queryTransact (std::string sql) noexcept(false) {
+    pqxx::connection C(connectionString);
 
-// mo schema or data modifiction work with trnsact
-pqxx::result database::queryTransact (std::string sql) {
-    pqxx::work W{conn};
+    pqxx::work W{C};
 
     pqxx::result res{ W.exec(sql) };
 
@@ -41,9 +22,10 @@ pqxx::result database::queryTransact (std::string sql) {
     return res;
 }
 
-// basically only select with query
-pqxx::result database::query (std::string sql) {
-    pqxx::nontransaction N{conn};
+pqxx::result database::query (std::string sql) noexcept(false) {
+    pqxx::connection C(connectionString);
+
+    pqxx::nontransaction N{C};
 
     pqxx::result res{ N.exec(sql) };
 
