@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include "./user.h"
+#include "./user.hpp"
 
 class AuthModule;
 

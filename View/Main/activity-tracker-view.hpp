@@ -3,8 +3,8 @@
 #include <vector>
 #include <iomanip>
 
-#include "../../Controller/util.h"
-#include "../../Model/activity-tracker/activity-tracker.h"
+#include "../../Controller/util.hpp"
+#include "../../Model/activity-tracker/activity-tracker.hpp"
 
 using namespace std;
 
@@ -99,8 +99,8 @@ inline void view::displayAT ()
         cout << i+1 << "\t" << activities[i].activity;
         cout << setw(60);
         cout << activities[i].longestStreak;
-        cout << "\t\t" << printFriendlyDate(activities[i].lastCheckIn) << "\t\t";
-        cout << activities[i].streakDuration / 60 << "\n";
+        cout << "\t\t" << activities[i].lastCheckIn << "\t\t";
+        cout << activities[i].streakDuration << "\n";
     }
     cout << "\nEnter activity number to Check In (0 to ignore): ";
     int activityNum;

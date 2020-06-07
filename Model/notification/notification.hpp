@@ -17,9 +17,6 @@ public:
 
     static void pushNotification (std::string notification, unsigned int userId) noexcept(false);
     static std::vector<std::string> getAllNotifications (unsigned int userId) noexcept(false);
-
-    friend std::ifstream& operator >> (std::ifstream& stream, NotificationService& obj);
-    friend std::ofstream& operator << (std::ofstream& stream, NotificationService& obj);
 };
 
 #endif

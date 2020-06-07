@@ -1,30 +1,25 @@
 #include <iostream>
-#include <pqxx/pqxx>
 
-#include "./Model/auth/auth.h"
-#include "./db/database-worker.h"
-#include "./Controller/auth-provider.h"
-#include "./Controller/db-provider.h"
-#include "./View/menus.h"
+#include "./Model/auth/auth.hpp"
+#include "./Controller/auth-provider.hpp"
+#include "./Controller/db-provider.hpp"
+#include "./View/menus.hpp"
+#include "./db/dbinit.hpp"
 
 using namespace std;
 
 std::unique_ptr<AuthModule> authProvider (new AuthModule());
-std::unique_ptr<database> dbProvider(new database());
+std::string connectionString("postgresql://himanshu:mynewpass@127.0.0.1:5432/test-db");
 
 int main ()
 {
     try {
-        pqxx::result R = dbProvider->query("SELECT * FROM notifications");
-        std::cout << "Found " << R.size() << " notifications\n";
-        for (auto row: R)
-        {
-            std::cout << row[0].c_str() << '\n';
-        }
-    } catch (const std::exception &e) {
-        std::cerr << e.what() << std::endl;
+        initDB::initDB();
     }
-
+    catch (const std::exception& e)
+    {
+        std::cout << e.what() << "\n";
+    }
     view::welcomeBanner ();
     view::checkForMissedStuff ();
     bool exitRequest = false;

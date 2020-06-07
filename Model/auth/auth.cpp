@@ -1,10 +1,11 @@
 #include <iostream>
 #include <fstream>
 #include <stdexcept>
+#include <pqxx/pqxx>
 
-#include "./user.h"
-#include "./auth.h"
-#include "../../Controller/util.h"
+#include "./user.hpp"
+#include "./auth.hpp"
+#include "../../Controller/util.hpp"
 
 void AuthModule::authenticateUser (User& user) noexcept
 {
@@ -70,16 +71,20 @@ void AuthModule::signupUser (std::string email, std::string password, std::strin
         throw std::runtime_error("Email is not valid!!");
     }
     
-    User userExists {User::findOne(email)};
-
-    if (userExists)
+    User user = User(email, password, name);
+    
+    try
+    {
+        user.save();
+    }
+    catch (const pqxx::unique_violation& e)
     {
         throw std::runtime_error("User already exists!!");
     }
-    
-    User user = User(email, password, name);
-    
-    user.save();
+    catch(const std::exception& e)
+    {
+        throw e;
+    }
     
     authenticateUser(user);
 }

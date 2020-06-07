@@ -3,8 +3,8 @@
 #include <iomanip>
 #include <iostream>
 
-#include "../../Controller/util.h"
-#include "../../Model/todos/todo.h"
+#include "../../Controller/util.hpp"
+#include "../../Model/todos/todo.hpp"
 
 using namespace std;
 
@@ -99,8 +99,8 @@ inline void view::displayTodos ()
         cout << i+1 << "\t";
         cout << todos[i].todo;
         cout << setw(60);
-        cout << printFriendlyDate(todos[i].createdAt);
-        cout << "\t\t" << printFriendlyDate(todos[i].completedAt) << "\n";
+        cout << todos[i].createdAt;
+        cout << "\t\t" << todos[i].completedAt << "\n";
 
     }
     if (getCompleted)

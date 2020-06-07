@@ -1,10 +1,10 @@
-#include "../../Controller/util.h"
-#include "./activity-tracker-view.h"
-#include "./long-term-goal-view.h"
-#include "./monthly-planner-view.h"
-#include "./todo-list-view.h"
-#include "../../Model/notification/notification.h"
-#include "../../Controller/auth-provider.h"
+#include "../../Controller/util.hpp"
+#include "./activity-tracker-view.hpp"
+#include "./long-term-goal-view.hpp"
+#include "./monthly-planner-view.hpp"
+#include "./todo-list-view.hpp"
+#include "../../Model/notification/notification.hpp"
+#include "../../Controller/auth-provider.hpp"
 
 using namespace std;
 

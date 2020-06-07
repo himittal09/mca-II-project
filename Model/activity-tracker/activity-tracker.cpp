@@ -3,30 +3,14 @@
 #include <vector>
 #include <stdexcept>
 #include <sstream>
+#include <pqxx/pqxx>
+#include <string>
 
-#include "../../Controller/util.h"
-#include "./activity-tracker.h"
-#include "../notification/notification.h"
-#include "../../Controller/auth-provider.h"
-
-std::string atFilePath = std::string("activity-tracker.dat");
-
-unsigned int ActivityTracker::getActivityCount () noexcept(false)
-{
-    std::ifstream stream {atFilePath, std::ios::in | std::ios::app};
-    if (!stream.is_open())
-    {
-        throw std::runtime_error("Couldn't get the activities to display!!");
-    }
-    
-    unsigned int fileLength = 0;
-
-    for (std::string str; std::getline(stream, str); std::ws(stream))
-    {
-        fileLength++;
-    }
-    return fileLength;
-}
+#include "../../Controller/util.hpp"
+#include "./activity-tracker.hpp"
+#include "../notification/notification.hpp"
+#include "../../Controller/auth-provider.hpp"
+#include "../../Controller/db-provider.hpp"
 
 ActivityTracker::ActivityTracker () noexcept
     :activityId {0},
@@ -35,131 +19,93 @@ ActivityTracker::ActivityTracker () noexcept
 { }
 
 ActivityTracker::ActivityTracker (std::string plan, int64_t streakTime) noexcept(false)
-    :activityId {ActivityTracker::getActivityCount()+1},
+    :activityId {0},
     longestStreak {0},
     userId {authProvider->getAuthenticatedUserId()},
     activity {plan},
-    streakDuration {streakTime * 60},
-    createdAt {getCurrentTime()},
-    lastCheckIn {0}
+    streakDuration {streakTime},
+    createdAt {getPostgresDate()}
 { }
 
 void ActivityTracker::save () noexcept(false)
 {
-    std::ofstream writestream{atFilePath, std::ios::app | std::ios::out};
-    if (!writestream.is_open())
-    {
-        throw std::runtime_error("Couldn't save the activity in the database");
-    }
-    writestream << *this;
+    std::string insertSQL = " \
+        INSERT INTO activitytrackers (activity, userId, streakDuration) \
+        VALUES ($1, $2, $3) \
+        RETURNING activityId;";
+    
+    std::string para = "'";
+    para += std::to_string(this->streakDuration);
+    para += " Minutes'";
+
+    pqxx::connection C(connectionString);
+    pqxx::work W{C};
+    pqxx::row R = W.exec_params1(insertSQL, this->activity, this->userId, para);
+    W.commit();
+    // finally setting ID on the todo
+    this->activityId = R[0].as<unsigned int>();
 }
 
 std::vector<ActivityTracker> ActivityTracker::getAllActivity () noexcept(false)
 {
-    std::ifstream stream {atFilePath, std::ios::in | std::ios::app};
-    if (!stream.is_open())
+    const int limit = 100;
+
+    std::string findSQL = " \
+        SELECT activityId, activity, longestStreak, \
+        EXTRACT(EPOCH FROM streakDuration) / 60, \
+        lastCheckIn, createdAt from activitytrackers \
+        WHERE userId = $1 \
+        LIMIT $2;";
+
+    std::vector<ActivityTracker> activities;
+
+    auto authenticatedUser = authProvider->getAuthenticatedUserId();
+
+    pqxx::connection C(connectionString);
+    pqxx::nontransaction N{C};
+    pqxx::result R{ N.exec_params(findSQL, authenticatedUser, limit) };
+
+    for (pqxx::row rowData: R)
     {
-        throw new std::runtime_error("Couldn't get all activities for displaying!!");
+        ActivityTracker temp;
+
+        temp.activityId = rowData[0].as<unsigned int>();
+        temp.longestStreak = rowData[2].as<int>();
+        temp.activity = rowData[1].as<std::string>();
+        temp.userId = authenticatedUser;
+        temp.createdAt = rowData[5].as<std::string>();
+        temp.streakDuration = rowData[3].as<int64_t>();
+
+        if (!rowData[4].is_null())
+        {
+            temp.lastCheckIn = rowData[4].as<std::string>();
+        }
+
+        activities.push_back(temp);
     }
 
-    std::vector<ActivityTracker> myActivities;
-    
-    for (ActivityTracker obj; !(stream >> obj).eof(); )
-    {
-        if (obj.userId == authProvider->getAuthenticatedUserId())
-        {
-            myActivities.push_back(obj);
-        }
-    }
-    return myActivities;
+    return activities;
 }
 
 void ActivityTracker::checkForAllStreakMiss ()
 {
-    std::ifstream rstream {atFilePath, std::ios::in | std::ios::app};
-    if (!rstream.is_open())
-    {
-        throw std::runtime_error("Cannot reach the database to check in for a Streak!!");
-    }
+    std::string selectSQL = "SELECT remove_activities();";
 
-    std::ofstream wstream {"temp.dat", std::ios::out};
-    if (!wstream.is_open())
-    {
-        throw std::runtime_error("Cannot reach the database to check in for a Streak!!");
-    }
-
-    for (ActivityTracker obj; !(rstream >> obj).eof(); )
-    {
-        if (diffBetween(obj.lastCheckIn, obj.streakDuration))
-        {
-            wstream << obj;
-        }
-        else
-        {
-            std::stringstream str;
-            str << "You failed the activity ";
-            str << obj.activity;
-            str << "! Your streak this time was: ";
-            str << obj.longestStreak;
-            NotificationService::pushNotification(str.str(), obj.userId);
-        }
-    }
-
-    wstream.close();
-    rstream.close();
-
-    remove(atFilePath.c_str());
-    rename("temp.dat", atFilePath.c_str());
+    pqxx::connection C(connectionString);
+    pqxx::work W{C};
+    W.exec1(selectSQL);
+    W.commit();
 }
 
 void ActivityTracker::checkIn ()
 {
-    std::ifstream rstream {atFilePath, std::ios::in | std::ios::app};
-    if (!rstream.is_open())
-    {
-        throw std::runtime_error("Cannot reach the database to check in for a Streak!!");
-    }
+    std::string updateSQL = " \
+        update activitytrackers \
+        set longestStreak = longestStreak + 1, lastCheckIn = current_timestamp \
+        where activityId = $1;";
 
-    std::ofstream wstream {"temp.dat", std::ios::out};
-    if (!wstream.is_open())
-    {
-        throw std::runtime_error("Cannot reach the database to check in for a Streak!!");
-    }
-
-    int64_t now = getCurrentTime();
-
-    this->longestStreak++;
-    this->lastCheckIn = now;
-
-    for (ActivityTracker obj; !(rstream >> obj).eof(); )
-    {
-        if (obj.activityId == this->activityId)
-        {
-            obj.longestStreak++;
-            obj.lastCheckIn = now;
-        }
-        wstream << obj;
-    }
-
-    wstream.close();
-    rstream.close();
-
-    remove(atFilePath.c_str());
-    rename("temp.dat", atFilePath.c_str());
-}
-
-std::ifstream& operator >> (std::ifstream& stream, ActivityTracker& obj)
-{
-    std::ws(stream);
-    std::getline(stream, obj.activity, '$');
-    stream >> obj.activityId >> obj.longestStreak >> obj.lastCheckIn;
-    stream >> obj.streakDuration >> obj.userId;
-    return stream;
-}
-
-std::ofstream& operator << (std::ofstream& stream, ActivityTracker& obj)
-{
-    stream << obj.activity << "$" << obj.activityId << " " << obj.longestStreak << " " << obj.lastCheckIn;
-    stream << " " << obj.streakDuration << " " << obj.userId << "\n";
-    return stream;
+    pqxx::connection C(connectionString);
+    pqxx::work W{C};
+    W.exec_params0(updateSQL, this->activityId);
+    W.commit();
 }

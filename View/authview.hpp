@@ -1,9 +1,9 @@
 #include <stdexcept>
 #include <iostream>
 
-#include "../Controller/util.h"
-#include "../Model/auth/auth.h"
-#include "../Controller/auth-provider.h"
+#include "../Controller/util.hpp"
+#include "../Model/auth/auth.hpp"
+#include "../Controller/auth-provider.hpp"
 
 using namespace std;
 

@@ -3,8 +3,8 @@
 #include <iomanip>
 #include <iostream>
 
-#include "../../Controller/util.h"
-#include "../../Model/monthly-planner/monthly-planner.h"
+#include "../../Controller/util.hpp"
+#include "../../Model/monthly-planner/monthly-planner.hpp"
 
 using namespace std;
 
@@ -100,9 +100,8 @@ inline void view::displayMP ()
         cout << i+1 << "\t";
         cout << plans[i].monthlyPlan;
         cout << setw(60);
-        cout << printFriendlyDate(plans[i].createdAt);
+        cout << plans[i].createdAt;
         cout << "\n";
-
     }
     if (getCompleted)
     {

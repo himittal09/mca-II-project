@@ -3,9 +3,8 @@
 #include <stdexcept>
 #include <iomanip>
 
-#include "../../Controller/util.h"
-#include "../../Model/long-term-goals/long-term-goals.h"
-#include "../../Model/long-term-goals/long-term-journal.h"
+#include "../../Controller/util.hpp"
+#include "../../Model/long-term-goals/long-term-goals.hpp"
 
 using namespace std;
 
@@ -102,7 +101,7 @@ inline void view::displayLTG ()
         cout << i+1 << "\t";
         cout << goals[i].goal;
         cout << setw(60);
-        cout << printFriendlyDate(goals[i].creationDate);
+        cout << goals[i].creationDate;
         cout << "\n";
     }
     cout << "\nEnter goal number to choose actions for it (0 to ignore): ";
@@ -151,7 +150,7 @@ inline void view::execLTGSubMenu (LongTermGoals& obj, int order)
 {
     if (order == 1)
     {
-        std::vector<LongTermGoalJournal> journals{obj.getMyJournals()};
+        std::vector<LongTermGoalJournalPartial> journals{obj.getMyJournals()};
         if (journals.size() == 0)
         {
             cout << "No journals to display...\n";
@@ -163,11 +162,11 @@ inline void view::execLTGSubMenu (LongTermGoals& obj, int order)
         cout << "Lodge Date";
         cout << "\n";
 
-        for (LongTermGoalJournal& jour: journals)
+        for (LongTermGoalJournalPartial& jour: journals)
         {
             cout << jour.journal;
             cout << setw(80);
-            cout << printFriendlyDate(jour.lodgeDate);
+            cout << jour.lodgeDate;
             cout << "\n";
         }
     }

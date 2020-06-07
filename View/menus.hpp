@@ -1,6 +1,6 @@
 #include <iostream>
-#include "./authview.h"
-#include "./Main/mainmenu.h"
+#include "./authview.hpp"
+#include "./Main/mainmenu.hpp"
 
 using namespace std;
 

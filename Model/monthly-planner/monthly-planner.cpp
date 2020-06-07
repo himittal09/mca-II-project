@@ -2,146 +2,88 @@
 #include <fstream>
 #include <stdexcept>
 #include <vector>
+#include <pqxx/pqxx>
 
-#include "../../Controller/util.h"
-#include "./monthly-planner.h"
-#include "../notification/notification.h"
-#include "../../Controller/auth-provider.h"
-
-std::string mpFilePath = std::string("monthlyplanner.dat");
-
-unsigned int MonthlyPlanner::getPlannerCount () noexcept(false)
-{
-    std::ifstream stream {mpFilePath, std::ios::in | std::ios::app};
-    if (!stream.is_open())
-    {
-        throw std::runtime_error("Couldn't get the monthly plans to display!!");
-    }
-    
-    unsigned int fileLength = 0;
-    for (std::string str; std::getline(stream, str); std::ws(stream))
-    {
-        fileLength++;
-    }
-    return fileLength;
-}
+#include "../../Controller/util.hpp"
+#include "./monthly-planner.hpp"
+#include "../../Controller/auth-provider.hpp"
+#include "../../Controller/db-provider.hpp"
 
 MonthlyPlanner::MonthlyPlanner () noexcept :plannerId {0} { }
 
 MonthlyPlanner::MonthlyPlanner (std::string monthlyPlan) noexcept(false)
-:monthlyPlan {monthlyPlan}, userId {authProvider->getAuthenticatedUserId()}, isCompleted {false},
-createdAt {getCurrentTime()}, plannerId {MonthlyPlanner::getPlannerCount() + 1}
+    :monthlyPlan {monthlyPlan},
+    userId {authProvider->getAuthenticatedUserId()},
+    isCompleted {false},
+    createdAt {getPostgresDate()},
+    plannerId {0}
 { }
 
 void MonthlyPlanner::save() noexcept(false)
 {
-    std::ofstream writestream {mpFilePath, std::ios::app | std::ios::out};
-    if (!writestream.is_open())
-    {
-        throw std::runtime_error("Couldn't save the plan in the database");
-    }
-    writestream << *this;
+    std::string insertSQL = " \
+        INSERT INTO monthlyplanners (plan, userId) \
+        VALUES ($1, $2) \
+        RETURNING plannerId;";
+
+    pqxx::connection C(connectionString);
+    pqxx::work W{C};
+    pqxx::row R = W.exec_params1(insertSQL, this->monthlyPlan, this->userId);
+    W.commit();
+    // finally setting ID on the plan
+    this->plannerId = R[0].as<unsigned int>();
 }
 
 void MonthlyPlanner::completePlan () noexcept(false)
 {
-    if (this->isCompleted)
-    {
-        return;
-    }
-    this->isCompleted = true;
+    std::string updateSQL = " \
+        UPDATE monthlyplanners \
+        SET isCompleted = true \
+        WHERE plannerId = $1 AND isCompleted = false;";
 
-    std::ifstream rstream {mpFilePath, std::ios::in | std::ios::app};
-    if (!rstream.is_open())
-    {
-        throw std::runtime_error("Cannot reach the database to complete the Plan now!!");
-    }
-
-    std::ofstream wstream {"temp.dat", std::ios::out};
-    if (!wstream.is_open())
-    {
-        throw std::runtime_error("Cannot reach the database to complete the Plan now!!");
-    }
-
-    for (MonthlyPlanner obj; !(rstream >> obj).eof(); )
-    {
-        if (obj.plannerId == this->plannerId)
-        {
-            obj.isCompleted = true;
-            this->isCompleted = true;
-        }
-        wstream << obj;
-    }
-
-    wstream.close();
-    rstream.close();
-
-    remove(mpFilePath.c_str());
-    rename("temp.dat", mpFilePath.c_str());
+    pqxx::connection C(connectionString);
+    pqxx::work W{C};
+    W.exec_params0(updateSQL, this->plannerId);
+    W.commit();
 }
 
 std::vector<MonthlyPlanner> MonthlyPlanner::getallPlans (bool getCompleted) noexcept(false)
 {
-    std::ifstream stream {mpFilePath, std::ios::in | std::ios::app};
-    if (!stream.is_open())
+    const int limit = 100;
+
+    std::string findSQL = " \
+        SELECT plannerId, userId, isCompleted, plan, createdAt from monthlyplanners \
+        WHERE userId = $1 AND isCompleted = $2 \
+        LIMIT $3;";
+
+    std::vector<MonthlyPlanner> plans;
+
+    pqxx::connection C(connectionString);
+    pqxx::nontransaction N{C};
+    pqxx::result R{ N.exec_params(findSQL, authProvider->getAuthenticatedUserId(), getCompleted, limit) };
+
+    for (pqxx::row rowData: R)
     {
-        throw std::runtime_error("Couldn't get all plans for displaying!!");
+        MonthlyPlanner temp;
+
+        temp.plannerId = rowData[0].as<unsigned int>();
+        temp.userId = rowData[1].as<unsigned int>();
+        temp.isCompleted = rowData[2].as<bool>();
+        temp.monthlyPlan = rowData[3].as<std::string>();
+        temp.createdAt = rowData[4].as<std::string>();
+
+        plans.push_back(temp);
     }
 
-    std::vector<MonthlyPlanner> myPlans;
-    unsigned int authenticatedUserId {authProvider->getAuthenticatedUserId()};
-
-    for (MonthlyPlanner obj; !(stream >> obj).eof(); )
-    {
-        if ((obj.userId == authenticatedUserId) && (obj.isCompleted == getCompleted))
-        {
-            myPlans.push_back(obj);
-        }
-    }
-    return myPlans;
+    return plans;
 }
 
 void MonthlyPlanner::checkAnRemoveExpiredPlan () noexcept(false)
 {
-    std::ifstream rstream {mpFilePath, std::ios::in | std::ios::app};
-    if (!rstream.is_open())
-    {
-        throw std::runtime_error("Cannot access monthly plans at the movement");
-    }
-
-    bool toRemovePlans {false};
+    std::string findSQL = "SELECT remove_monthly_plans()";
     
-    for (MonthlyPlanner obj; !(rstream >> obj).eof(); )
-    {
-        // to execute block only once
-        if (!toRemovePlans && monthDiffFromNow(obj.createdAt) != 0)
-        {
-            toRemovePlans = true;
-        }
-        if (toRemovePlans)
-        {
-            NotificationService::pushNotification(obj.monthlyPlan, obj.userId);
-        }
-    }
-
-    if (toRemovePlans)
-    {
-        // open file in truncate mode and delete all content
-        std::ofstream ofs {mpFilePath, std::ios::trunc | std::ios::out};
-    }
-}
-
-std::ifstream& operator >> (std::ifstream& stream, MonthlyPlanner& obj)
-{
-    std::ws(stream);
-    std::getline(stream, obj.monthlyPlan, '$');
-    stream >> obj.plannerId >> obj.userId >> obj.createdAt >> obj.isCompleted;
-    return stream;
-}
-
-std::ofstream& operator << (std::ofstream& stream, MonthlyPlanner& obj)
-{
-    stream << obj.monthlyPlan << "$" << obj.plannerId << " " << obj.userId << " ";
-    stream << obj.createdAt << " " << obj.isCompleted << "\n";
-    return stream;
+    pqxx::connection C(connectionString);
+    pqxx::work W{C};
+    W.exec1(findSQL);
+    W.commit();
 }

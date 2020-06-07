@@ -2,15 +2,10 @@
 #include <fstream>
 #include <stdexcept>
 #include <vector>
+#include <pqxx/pqxx>
 
-#include "./notification.h"
-
-// #ifndef _FILESYSTEM_
-//     #define _FILESYSTEM_
-//     #include "../../Controller/filesystem.hpp"
-// #endif
-
-std::string notificationFilePath = std::string("notifications.dat");
+#include "./notification.hpp"
+#include "../../Controller/db-provider.hpp"
 
 NotificationService::NotificationService () noexcept : userId {0} { }
 
@@ -21,73 +16,54 @@ NotificationService::NotificationService (std::string notification, unsigned int
 
 void NotificationService::pushNotification (std::string notification, unsigned int userId) noexcept(false)
 {
-    std::ofstream writestream {notificationFilePath, std::ios::app};
-    if (!writestream.is_open())
-    {
-        throw std::runtime_error("Couldn't push the notification");
-    }
+    std::string insertSQL = " \
+        INSERT INTO notifications (notification, userId) \
+        VALUES ($1, $2);";
 
-    NotificationService obj(notification, userId);
-    writestream << obj;
+    pqxx::connection C(connectionString);
+    pqxx::work W{C};
+    W.exec_params0(insertSQL, notification, userId);
+    W.commit();
 }
 
 std::vector<std::string> NotificationService::getAllNotifications (unsigned int userId) noexcept(false)
 {
-    std::ifstream stream {notificationFilePath, std::ios::in | std::ios::app};
-    if (!stream.is_open())
-    {
-        throw std::runtime_error("Couldn't get all notifications for displaying!!");
-    }
+    const int limit = 100;
 
-    std::ofstream writeStream {"temp.dat", std::ios::out};
-    if (!writeStream.is_open())
-    {
-        throw std::runtime_error("Couldn't get all notifications for displaying!!");
-    }
-
-    std::vector<std::string> notifications;
+    std::string findSQL = " \
+        SELECT notification from notifications \
+        WHERE userId = $1 \
+        LIMIT $2;";
     
-    for (NotificationService obj; !(stream >> obj).eof();)
-    {
-        if (obj.userId == userId)
-        {
-            notifications.push_back(obj.notification);
-        }
-        else
-        {
-            writeStream << obj;
-        }
-    }
-    stream.close();
-    writeStream.close();
+    // make this a trigger in database
+    std::string deleteSQL = " \
+        DELETE FROM notifications \
+        WHERE ctid IN ( \
+            SELECT ctid \
+            from notifications \
+            WHERE userId = $1 \
+            LIMIT $2 \
+        );";
+    
+    std::vector<std::string> notifications;
 
-    if (notifications.size())
+    pqxx::connection C(connectionString);
+    pqxx::nontransaction N{C};
+    pqxx::result R{ N.exec_params(findSQL, userId, limit) };
+
+    if (!R.size())
     {
-        // std::filesystem::remove(notificationFilePath);
-        // std::filesystem::rename("temp.dat", notificationFilePath);
-        remove(notificationFilePath.c_str());
-        rename("temp.dat", notificationFilePath.c_str());
+        return notifications;
     }
-    else
+    for (pqxx::row rowData: R)
     {
-        // std::filesystem::remove("temp.dat");
-        remove("temp.dat");
+        notifications.push_back(rowData[0].as<std::string>());
     }
+    N.commit();
+
+    pqxx::work W{C};
+    W.exec_params0(deleteSQL, userId, limit);
+    W.commit();
 
     return notifications;
-}
-
-std::ifstream& operator >> (std::ifstream& stream, NotificationService& obj)
-{
-    std::ws(stream);
-    std::getline(stream, obj.notification, '$');
-    stream >> obj.userId;
-    return stream;
-}
-
-std::ofstream& operator << (std::ofstream& stream, NotificationService& obj)
-{
-    // append a dollar ($) after every variable sized string
-    stream << obj.notification << "$" << obj.userId << "\n";
-    return stream;
 }

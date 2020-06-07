@@ -1,129 +1,85 @@
 #include <stdexcept>
 #include <iostream>
 #include <fstream>
+#include <pqxx/pqxx>
 
-#include "../../Controller/auth-provider.h"
-#include "../../Controller/util.h"
-#include "./todo.h"
-
-// #ifndef _FILESYSTEM_
-//     #define _FILESYSTEM_
-//     #include "../../Controller/filesystem.hpp"
-// #endif
-
-std::string todoFilePath = std::string("todo.dat");
-
-unsigned int Todo::getTodoCount () noexcept(false)
-{
-    std::ifstream wstream {todoFilePath, std::ios::in | std::ios::app};
-    if (!wstream.is_open())
-    {
-        throw std::runtime_error("Cannot determine the todos created count!!");
-    }
-
-    unsigned int fileLength = 0;    
-    for (std::string str; std::getline(wstream, str); std::ws(wstream))
-    {
-        fileLength++;
-    }
-
-    return fileLength;
-}
+#include "../../Controller/auth-provider.hpp"
+#include "../../Controller/db-provider.hpp"
+#include "../../Controller/util.hpp"
+#include "./todo.hpp"
 
 Todo::Todo () noexcept : todoId {0} { }
 
 Todo::Todo (std::string todoBody) noexcept(false)
     :todo {todoBody},
-    todoId {Todo::getTodoCount() + 1},
-    createrId {authProvider->getAuthenticatedUserId()},
+    todoId {0},
+    userId {authProvider->getAuthenticatedUserId()},
     completed {false},
-    createdAt {getCurrentTime()},
-    completedAt {0}
+    createdAt {getPostgresDate()}
 { }
 
 std::vector<Todo> Todo::getAllTodos (bool getCompleted) noexcept(false)
 {
-    std::ifstream stream {todoFilePath, std::ios::in | std::ios::app};
-    if (!stream.is_open())
-    {
-        throw new std::runtime_error("Couldn't get all todos for displaying!!");
-    }
+    const int limit = 100;
 
-    std::vector<Todo> allTodos;
-    unsigned int authenticatedUserId {authProvider->getAuthenticatedUserId()};
+    std::string findSQL = " \
+        SELECT todoId, todo, createdAt, completedAt from todos \
+        WHERE userId = $1 AND isCompleted = $2 \
+        LIMIT $3;";
+    
+    std::vector<Todo> todos;
 
-    for (Todo obj; !(stream >> obj).eof(); )
+    auto authenticatedUser = authProvider->getAuthenticatedUserId();
+
+    pqxx::connection C(connectionString);
+    pqxx::nontransaction N{C};
+    pqxx::result R{ N.exec_params(findSQL, authenticatedUser, getCompleted, limit) };
+
+    for (pqxx::row rowData: R)
     {
-        if ((obj.createrId == authenticatedUserId) && (obj.completed == getCompleted))
+        Todo temp;
+        
+        temp.todoId = rowData[0].as<unsigned int>();
+        temp.todo = rowData[1].as<std::string>();
+        temp.userId = authenticatedUser;
+        temp.completed = getCompleted;
+        temp.createdAt = rowData[2].as<std::string>();
+
+        if (!rowData[5].is_null())
         {
-            allTodos.push_back(obj);
+            temp.completedAt = rowData[3].as<std::string>();
         }
+
+        todos.push_back(temp);
     }
 
-    return allTodos;
+    return todos;
 }
 
 void Todo::save () noexcept(false)
 {
-    std::ofstream writestream {todoFilePath, std::ios::app | std::ios::out};
-    if (!writestream.is_open())
-    {
-        throw std::runtime_error("Couldn't save the todo in the database");
-    }
+    std::string insertSQL = " \
+        INSERT INTO todos (todo, userId) \
+        VALUES ($1, $2) \
+        RETURNING todoId;";
 
-    writestream << *this;
+    pqxx::connection C(connectionString);
+    pqxx::work W{C};
+    pqxx::row R = W.exec_params1(insertSQL, this->todo, this->userId);
+    W.commit();
+    // finally setting ID on the todo
+    this->todoId = R[0].as<unsigned int>();
 }
 
 void Todo::completeTodo () noexcept(false)
 {
-    if (this->completed)
-    {
-        return;
-    }
-    int64_t now = getCurrentTime();
-    this->completedAt = now;
-    this->completed = true;
+    std::string updateSQL = " \
+        UPDATE todos \
+        SET isCompleted = true, completedAt = CURRENT_DATE \
+        WHERE todoId = $1 AND isCompleted = false;";
 
-    std::ifstream rstream {todoFilePath, std::ios::in | std::ios::app};
-    if (!rstream.is_open())
-    {
-        throw std::runtime_error("Couldn't update the todo!!");
-    }
-
-    std::ofstream wstream {"temp.dat", std::ios::out};
-    if (!wstream.is_open())
-    {
-        throw std::runtime_error("Couldn't update the todo!!");
-    }
-
-    for (Todo obj; !(rstream >> obj).eof(); )
-    {
-        if (obj.todoId == this->todoId)
-        {
-            obj.completedAt = now;
-            obj.completed = true;
-        }
-        wstream << obj;
-    }
-
-    wstream.close();
-    rstream.close();
-
-    remove(todoFilePath.c_str());
-    rename("temp.dat", todoFilePath.c_str());
-}
-
-std::ifstream& operator >> (std::ifstream& stream, Todo& obj)
-{
-    std::ws(stream);
-    std::getline(stream, obj.todo, '$');
-    stream >> obj.todoId >> obj.createrId >> obj.completed >> obj.createdAt >> obj.completedAt;
-    return stream;
-}
-
-std::ofstream& operator << (std::ofstream& stream, Todo& obj)
-{
-    stream << obj.todo << "$" << obj.todoId << " " << obj.createrId << " ";
-    stream << obj.completed << " " << obj.createdAt << " " << obj.completedAt << "\n";
-    return stream;
+    pqxx::connection C(connectionString);
+    pqxx::work W{C};
+    W.exec_params0(updateSQL, this->todoId);
+    W.commit();
 }

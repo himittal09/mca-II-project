@@ -1,6 +1,6 @@
 #include <memory>
 
-#include "../Model/auth/auth.h"
+#include "../Model/auth/auth.hpp"
 
 #ifndef __AUTHPROVIDERH__
 #define __AUTHPROVIDERH__

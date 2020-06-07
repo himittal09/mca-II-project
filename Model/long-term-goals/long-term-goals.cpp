@@ -1,45 +1,13 @@
 #include <iostream>
-#include <fstream>
 #include <stdexcept>
 #include <vector>
 #include <string>
+#include <pqxx/pqxx>
 
-#include "../../Controller/util.h"
-#include "./long-term-goals.h"
-#include "./long-term-journal.h"
-#include "../../Controller/auth-provider.h"
-
-std::string ltgFilePath = std::string("longtermgoal.dat");
-
-// void LongTermGoals::incrJournalsLogded () noexcept(false)
-// {
-//     std::ofstream wstream {ltgFilePath, std::ios::app | std::ios::out};
-//     if (!wstream.is_open())
-//     {
-//         throw std::runtime_error("Cannot determine the journals lodged count!!");
-//     }
-
-//     this->journals_logded++;
-//     wstream.seekp((this->LongTermGoalId - 1) * sizeof(LongTermGoals), std::ios::beg);
-//     wstream.write((char *)this, sizeof(this));
-// }
-
-unsigned int LongTermGoals::getGoalsCount () noexcept(false)
-{
-    std::ifstream fileptr {ltgFilePath, std::ios::in | std::ios::app};
-    if (!fileptr.is_open())
-    {
-        throw std::runtime_error("Couldn't get the journals to display!!");
-    }
-
-    unsigned int fileLength = 0;
-    for (std::string str; std::getline(fileptr, str); std::ws(fileptr))
-    {
-        fileLength++;
-    }
-
-    return fileLength;
-}
+#include "../../Controller/util.hpp"
+#include "./long-term-goals.hpp"
+#include "../../Controller/auth-provider.hpp"
+#include "../../Controller/db-provider.hpp"
 
 LongTermGoals::LongTermGoals () noexcept :LongTermGoalId {0} { }
 
@@ -47,51 +15,72 @@ LongTermGoals::LongTermGoals (std::string goal) noexcept(false)
     :isCompleted {false},
     journals_logded {0},
     goal {goal},
-    creationDate {getCurrentTime()},
-    lastProgress {0},
+    creationDate {getPostgresDate()},
     userId {authProvider->getAuthenticatedUserId()},
-    LongTermGoalId {LongTermGoals::getGoalsCount() + 1}
+    LongTermGoalId {0}
 { }
 
 void LongTermGoals::save () noexcept(false)
 {
-    std::ofstream writestream {ltgFilePath, std::ios::app | std::ios::out};
-    if (!writestream.is_open())
-    {
-        throw std::runtime_error("Couldn't save the goal in the database");
-    }
+    std::string insertSQL = " \
+        INSERT INTO longtermgoals (userId, goal) \
+        VALUES ($1, $2) \
+        RETURNING LongTermGoalId;";
 
-    writestream << *this;
+    pqxx::connection C(connectionString);
+    pqxx::work W{C};
+    pqxx::row R = W.exec_params1(insertSQL, this->userId, this->goal);
+    W.commit();
+    this->LongTermGoalId = R[0].as<unsigned int>();
 }
 
 std::vector<LongTermGoals> LongTermGoals::getAllGoals (bool getCompleted) noexcept(false)
 {
-    std::ifstream stream {ltgFilePath, std::ios::in | std::ios::app};
-    if (!stream.is_open())
-    {
-        throw new std::runtime_error("Couldn't get all goals for displaying!!");
-    }
+    const int limit = 100;
 
-    std::vector<LongTermGoals> myltg;
-    unsigned int authenticatedUserId {authProvider->getAuthenticatedUserId()};
+    std::string findSQL = " \
+        SELECT LongTermGoalId, goal, journals_logded, lastProgress, createdAt from longtermgoals \
+        WHERE userId = $1 AND isCompleted = $2 \
+        LIMIT $3;";
+    
+    std::vector<LongTermGoals> goals;
 
-    for (LongTermGoals obj; !(stream >> obj).eof(); )
+    auto authenticatedUser = authProvider->getAuthenticatedUserId();
+
+    pqxx::connection C(connectionString);
+    pqxx::nontransaction N{C};
+    pqxx::result R{ N.exec_params(findSQL, authenticatedUser, getCompleted, limit) };
+
+    for (pqxx::row rowData: R)
     {
-        if ((obj.userId == authenticatedUserId) && (obj.isCompleted == getCompleted))
+        LongTermGoals temp;
+        
+        temp.LongTermGoalId = rowData[0].as<unsigned int>();
+        temp.userId = authenticatedUser;
+        temp.goal = rowData[1].as<std::string>();
+        temp.journals_logded = rowData[2].as<int>();
+        temp.isCompleted = getCompleted;
+        temp.creationDate = rowData[4].as<std::string>();
+
+        if (!rowData[3].is_null())
         {
-            myltg.push_back(obj);
+            temp.lastProgress = rowData[3].as<std::string>();
         }
+
+        goals.push_back(temp);
     }
-    return myltg;
+
+    return goals;
 }
 
 void LongTermGoals::lodgeJournal (std::string jour) noexcept(false)
-{
-    LongTermGoalJournal journal(jour, this->LongTermGoalId);
-    // this->incrJournalsLogded();
-    // TODO: increment journal_lodged counter on file everytime a new journal is lodged
-    journal.save(10);
-    // TODO: update last progress on longtermgoal every time a new journal for a goal is posted
+{    
+    std::string selectSQL = "SELECT lodge_journal($1, $2)";
+
+    pqxx::connection C(connectionString);
+    pqxx::work W{C};
+    W.exec_params1(selectSQL, this->LongTermGoalId, jour);
+    W.commit();
 }
 
 void LongTermGoals::markGoalComplete () noexcept(false)
@@ -101,53 +90,36 @@ void LongTermGoals::markGoalComplete () noexcept(false)
         return;
     }
     
-    this->isCompleted = true;
+    std::string updateSQL = " \
+        update longtermgoals \
+        set isCompleted = true \
+        where LongTermGoalId = $1 and isCompleted = false;";
 
-    std::ifstream rstream {ltgFilePath, std::ios::in | std::ios::app};
-    if (!rstream.is_open())
-    {
-        throw std::runtime_error("Couldn't update the todo!!");
-    }
-
-    std::ofstream wstream {"temp.dat", std::ios::out};
-    if (!wstream.is_open())
-    {
-        throw std::runtime_error("Couldn't update the todo!!");
-    }
-
-    for (LongTermGoals obj; !(rstream >> obj).eof(); )
-    {
-        if (obj.LongTermGoalId == this->LongTermGoalId)
-        {
-            obj.isCompleted = true;
-        }
-        wstream << obj;
-    }
-
-    wstream.close();
-    rstream.close();
-
-    remove(ltgFilePath.c_str());
-    rename("temp.dat", ltgFilePath.c_str());
+    pqxx::connection C(connectionString);
+    pqxx::work W{C};
+    W.exec_params0(updateSQL, this->LongTermGoalId);
+    W.commit();
 }
 
-std::vector<LongTermGoalJournal> LongTermGoals::getMyJournals () noexcept(false)
+std::vector<LongTermGoalJournalPartial> LongTermGoals::getMyJournals () noexcept(false)
 {
-    return LongTermGoalJournal::getJournals(this->LongTermGoalId);
-}
+    std::string findSQL = " \
+        SELECT journal, lodgeDate from longtermjournals \
+        WHERE LongTermGoalId = $1;";
 
-std::ifstream& operator >> (std::ifstream& stream, LongTermGoals& obj)
-{
-    std::ws(stream);
-    std::getline(stream, obj.goal, '$');
-    stream >> obj.LongTermGoalId >> obj.userId >> obj.lastProgress >> obj.creationDate;
-    stream >> obj.journals_logded >> obj.isCompleted;
-    return stream;
-}
+    pqxx::connection C(connectionString);
+    pqxx::nontransaction N{C};
+    pqxx::result R{ N.exec_params(findSQL, this->LongTermGoalId) };
 
-std::ofstream& operator<<(std::ofstream& stream, LongTermGoals& obj)
-{
-    stream << obj.goal << "$" << obj.LongTermGoalId << " " << obj.userId << " " << obj.lastProgress << " ";
-    stream <<  obj.creationDate << " " << obj.journals_logded << " " << obj.isCompleted << "\n";
-    return stream;
+    std::vector<LongTermGoalJournalPartial> journals;
+
+    for (pqxx::row rowData: R)
+    {
+        LongTermGoalJournalPartial temp;
+        temp.journal = rowData[0].as<std::string>();
+        temp.lodgeDate = rowData[1].as<std::string>();
+        journals.push_back(temp);
+    }
+
+    return journals;
 }
