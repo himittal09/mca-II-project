@@ -1,9 +1,35 @@
-https://github.com/nlohmann/json
-
-https://stackoverflow.com/questions/272900/undefined-reference-to-static-class-member
-
-http://www.cplusplus.com/forum/articles/10515/
-http://www.cplusplus.com/articles/4z18T05o/
-
 Basically ios::in requires to already have an existing file.
 Append ios::app to create the file if it doesn't exists
+
+https://www.modernescpp.com
+
+libpqxx:
+    docs: https://libpqxx.readthedocs.io/en/6.3/
+    field: https://libpqxx.readthedocs.io/en/6.3/a01063.html
+
+header related doubts:
+    https://stackoverflow.com/questions/34614523/multiple-definition-error-c
+    http://gudok.xyz/inline/
+    templates:
+        https://stackoverflow.com/questions/495021/why-can-templates-only-be-implemented-in-the-header-file
+
+C++ race condition and multithreading:
+    whole docs: https://www.modernescpp.com/index.php/der-einstieg-in-modernes-c
+    easy article: https://www.bogotobogo.com/cplusplus/C11/8_C11_Race_Conditions.php
+
+date/time cast and conversion:
+    https://stackoverflow.com/questions/21021388/how-to-parse-a-date-string-into-a-c11-stdchrono-time-point-or-similar
+    https://www.tutorialspoint.com/cplusplus/cpp_date_time.htm
+
+Howard Hinnant date/time help:
+    https://howardhinnant.github.io/date/date.html#Introduction
+    https://stackoverflow.com/questions/31255486/c-how-do-i-convert-a-stdchronotime-point-to-long-and-back
+    https://stackoverflow.com/questions/15957805/extract-year-month-day-etc-from-stdchronotime-point-in-c
+    https://stackoverflow.com/questions/39274287/stdchronosystem-clocknow-considering-the-os-configured-time-zone
+
+clearing screen:
+    https://www.cplusplus.com/forum/articles/10515/
+    https://www.cplusplus.com/articles/4z18T05o/
+
+password masking:
+    https://www.cplusplus.com/articles/E6vU7k9E/

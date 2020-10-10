@@ -13,7 +13,8 @@ std::string connectionString("postgresql://himanshu:mynewpass@127.0.0.1:5432/tes
 
 int main ()
 {
-    try {
+    try
+    {
         initDB::initDB();
     }
     catch (const std::exception& e)

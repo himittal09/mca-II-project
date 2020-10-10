@@ -1,3 +1,5 @@
+#!/bin/sh
+
 if [ -d "Build" ]; then
 	echo "Build directory already exists!"
 	exit
@@ -7,11 +9,12 @@ echo "Please wait while build process finishes..."
 
 mkdir Build
 
-while IFS= read -r -d '' -u 9
+for f in $(find . -maxdepth 5 -type f -name '*.cpp')
 do
-	f=$(basename $REPLY)
-	g++ -std=c++17 -c $REPLY -o ./Build/${f%.cpp}.o
-done 9< <( find . -maxdepth 5 -type f -name '*.cpp' -print0 )
+	fuck=${f##*/}
+	fuck=${fuck%.cpp}
+	g++ -std=c++17 -c $f -o ./Build/$fuck.o
+done
 
 echo "Compilation finished, starting to link compiled files"
 

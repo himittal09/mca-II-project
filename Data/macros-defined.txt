@@ -22,8 +22,6 @@
 
 ./Model/long-term-goals/long-term-goals.h           __LTGH__
 ./Model/long-term-goals/long-term-goals.cpp         __LTG__
-./Model/long-term-goals/long-term-journal.h         __LTJH__
-./Model/long-term-goals/long-term-journal.cpp       __LTJ__
 
 ./Model/monthly-planner/monthly-planner.h           __MONTHLYH__
 ./Model/monthly-planner/monthly-planner.cpp         __MONTHLY__
